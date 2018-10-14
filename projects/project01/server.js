@@ -25,7 +25,30 @@ const server = net.createServer((socket) => {
         let dataString = data.toString().split(' ');
         let dataPort = dataString[0]
         let command = dataString[1]
-        console.log(`port: ${dataPort}, command: ${command}`)
+        if (dataString.length > 2) {
+            let fileName = dataString[2]
+            console.log(`port: ${dataPort}, command: ${command}, file: ${fileName}`)
+        } else {
+            console.log(`port: ${dataPort}, command: ${command}`)
+        }
+
+        switch (command) {
+            case 'LIST':
+                list(dataPort)
+            break
+
+            case 'STOR':
+                commands['STOR']
+            break
+
+            case 'RETR':
+                commands['RETR']
+            break
+
+            default:
+                console.log('INVALID COMMAND')
+            break
+        }
 
         // Call the command.
     })
@@ -34,52 +57,26 @@ const server = net.createServer((socket) => {
 
 console.log(`Listening at ${host} on port ${port}`)
 
+list = (socket) => {
+    console.log('list some things')
 
-exports.commands = {
-    'LIST': (socket) => {
+    // fs.readdir(dir, (error, file) => {
+    //     if (error) {
+    //         socket.error = true
+    //     } else {
+    //         file.forEach((result) => {
+    //             stats = fs.statSync(path.join(dir, result))
+    //             console.log(`File ${result} ${JSON.stringify(stats)}`)
+    //             dataSocket.write(`File ${result} ${JSON.stringify(stats)}`)
+    //         })
+    //     }
+    // })
+}
 
-        console.log('list some things')
+retr = (file) => {
+    console.log('RETRIEVING FILES')
+}
 
-        fs.readdir(dir, (error, file) => {
-            if (error) {
-                socket.error = true
-            } else {
-                file.forEach((result) => {
-                    stats = fs.statSync(path.join(dir, result))
-                    console.log(`File ${result} ${JSON.stringify(stats)}`)
-                    dataSocket.write(`File ${result} ${JSON.stringify(stats)}`)
-                })
-            }
-        })
-    },
-    "RETR": (file) => {
-        let socket = this
-        socket.dataTransfer((dataSocket, finish) => {
-            fs.readFile(path.join(dir, file), function (err, data) {
-                console.log(data.toString())
-                // handle error if file DNE
-                if (err) socket.reply(501, 'Read fail')
-                else {
-                    dataSocket.write(data, socket.dataEncoding)
-                    dataSocket.end()
-                }
-            });
-        })
-        if (socket.dataTransfer.prepare) socket.dataTransfer.queue.shift().call(socket.dataTransfer.squeue.shift())
-    },
-    "STOR": (file) => {
-        let socket = this
-        socket.dataTransfer((dataSocket, finish) => {
-            let value = ""
-            dataSocket.on('data', (chunk) => {
-                value += chunk
-            })
-            dataSocket.on('end', () => {
-                fs.writeFile(path.join(dir, file), value, (error) => {
-                    if (error) socket.reply(501, 'Read fail')
-                })
-            })
-        })
-        if (socket.dataTransfer.prepare) socket.dataTransfer.queue.shift().call(socket.dataTransfer.squeue.shift())
-    }
+stor = (file) => {
+    console.log('STORING FILES')
 }

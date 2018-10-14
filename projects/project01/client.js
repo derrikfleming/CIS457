@@ -19,7 +19,11 @@ let io = readline.createInterface({
 
 io.on('line', (line) => {
 
-    switch (line.trim()) {
+    let commandTokens = line.split(' ')
+    let command = commandTokens[0]
+    if (commandTokens.length > 1) filePath = commandTokens[1]
+
+    switch (command) {
 
         // Connect to the FTP server
         case 'CONNECT':
@@ -37,23 +41,27 @@ io.on('line', (line) => {
             dataSocket.connect(dataPort, host, () => {
                 console.log('connected')
             })
+
+            
             dataSocket.destroy()
             break
 
         // Store a file on the server
         case 'STOR':
-            dataPort += 2
-            controlSocket.write(`${dataPort} LIST`)
+            if (filePath) {
+                dataPort += 2
 
-            dataSocket.listen(dataPort, host)
-
-            dataSocket.on('data', (data) => {
-                // Send the file to teh server
-
-                // Error handle if file DNE on client.
-            })
-
-            dataSocket.end()
+                controlSocket.write(`${dataPort} STOR ${filePath}`)
+                dataSocket.connect(dataPort, host, () => {
+                    fs.readFile(filePath, (error, data) => {
+                        if (error) console.log('There was an error reading the file')
+                        else dataSocket.end(data)
+                    })
+                })
+                dataSocket.destroy()
+            } else {
+                console.log('INVALID COMMAND: no filepath was entered')
+            }
         break
 
         // Retrieve a file from the server
