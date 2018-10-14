@@ -5,11 +5,19 @@ require('module')
 
 const host = 'localhost'
 const port = 9381
+const clients = []
 
 const dir = process.cwd()
 
 const server = net.createServer((socket) => {
     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
+
+    // Identify this client
+    socket.name = socket.remoteAddress + ":" + socket.remotePort 
+
+    // Put this new client in the list
+    clients.push(socket);
+    console.log(clients)
 
     // socket.on('connection', () => { 
     //     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
@@ -17,6 +25,7 @@ const server = net.createServer((socket) => {
 
     socket.on('end', () => {
         console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort} disconnected`)
+        clients.splice(clients.indexOf(socket), 1);
     })
 
     socket.on('data', (data) => {
@@ -38,11 +47,11 @@ const server = net.createServer((socket) => {
             break
 
             case 'STOR':
-                commands['STOR']
+                stor(fileName)
             break
 
             case 'RETR':
-                commands['RETR']
+                retr(fileName)
             break
 
             default:
@@ -60,17 +69,17 @@ console.log(`Listening at ${host} on port ${port}`)
 list = (socket) => {
     console.log('list some things')
 
-    // fs.readdir(dir, (error, file) => {
-    //     if (error) {
-    //         socket.error = true
-    //     } else {
-    //         file.forEach((result) => {
-    //             stats = fs.statSync(path.join(dir, result))
-    //             console.log(`File ${result} ${JSON.stringify(stats)}`)
-    //             dataSocket.write(`File ${result} ${JSON.stringify(stats)}`)
-    //         })
-    //     }
-    // })
+    fs.readdir(dir, (error, file) => {
+        if (error) {
+            socket.error = true
+        } else {
+            file.forEach((result) => {
+                stats = fs.statSync(path.join(dir, result))
+                console.log(`File ${result} ${JSON.stringify(stats)}`)
+                socket.write(`File ${result} ${JSON.stringify(stats)}`)
+            })
+        }
+    })
 }
 
 retr = (file) => {
