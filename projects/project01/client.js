@@ -29,7 +29,6 @@ io.on('line', (line) => {
         case 'CONNECT':
             controlSocket.connect(port, host, () => {
                 console.log('Client: Connected to server')
-                // controlSocket.write('Hallo Spaceboy.')
             })
             break
 
@@ -42,7 +41,10 @@ io.on('line', (line) => {
                 console.log('connected')
             })
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
             dataSocket.destroy()
             break
 

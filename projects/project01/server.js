@@ -5,27 +5,34 @@ require('module')
 
 const host = 'localhost'
 const port = 9381
-const clients = []
+
+let clientNum = 0
 
 const dir = process.cwd()
 
 const server = net.createServer((socket) => {
+<<<<<<< HEAD
     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
 
     // Identify this client
     socket.name = socket.remoteAddress + ":" + socket.remotePort
+=======
+>>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
 
-    // Put this new client in the list
-    clients.push(socket);
-    console.log(clients)
+    clientNum++
+    socket.nickname = `Client ${clientNum}`
+    let clientName = socket.nickname;
 
+<<<<<<< HEAD
     // socket.on('connection', () => {
     //     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
     // })
+=======
+    console.log(`Server: ${clientName} has connected from ${socket.remoteAddress}`)
+>>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
 
     socket.on('end', () => {
-        console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort} disconnected`)
-        clients.splice(clients.indexOf(socket), 1);
+        console.log(`Server: Client ${clientName} disconnected`)
     })
 
     socket.on('data', (data) => {
@@ -43,8 +50,13 @@ const server = net.createServer((socket) => {
 
         switch (command) {
             case 'LIST':
+<<<<<<< HEAD
                 list(dataPort)
                 break
+=======
+                list(socket, clientName)
+            break
+>>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
 
             case 'STOR':
                 stor(fileName)
@@ -58,28 +70,15 @@ const server = net.createServer((socket) => {
                 console.log('INVALID COMMAND')
                 break
         }
-
-        // Call the command.
     })
 
 }).listen(port, host)
 
 console.log(`Listening at ${host} on port ${port}`)
 
-list = (socket) => {
+list = (socket, clientName) => {
     console.log('list some things')
-
-    fs.readdir(dir, (error, file) => {
-        if (error) {
-            socket.error = true
-        } else {
-            file.forEach((result) => {
-                stats = fs.statSync(path.join(dir, result))
-                console.log(`File ${result} ${JSON.stringify(stats)}`)
-                socket.write(`File ${result} ${JSON.stringify(stats)}`)
-            })
-        }
-    })
+    socket.write(`You have been given client name ${clientName}`)
 }
 
 retr = (file) => {
