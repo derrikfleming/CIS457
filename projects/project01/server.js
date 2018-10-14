@@ -9,20 +9,21 @@ const port = 9381
 let clientNum = 0
 
 const dir = process.cwd()
+const dataSocket = new net.Socket()
 
-const server = net.createServer((socket) => {
+const server = net.createServer((controlSocket) => {
 
     clientNum++
-    socket.nickname = `Client ${clientNum}`
-    let clientName = socket.nickname;
+    controlSocket.nickname = `Client ${clientNum}`
+    let clientName = controlSocket.nickname;
 
-    console.log(`Server: ${clientName} has connected from ${socket.remoteAddress}`)
+    console.log(`Server: ${clientName} has connected from ${controlSocket.remoteAddress}`)
 
-    socket.on('end', () => {
+    controlSocket.on('end', () => {
         console.log(`Server: Client ${clientName} disconnected`)
     })
 
-    socket.on('data', (data) => {
+    controlSocket.on('data', (data) => {
         // Parse the command.
         // TODO: _why_ is toString necessary?!?
         let dataString = data.toString().split(' ');
@@ -37,7 +38,7 @@ const server = net.createServer((socket) => {
 
         switch (command) {
             case 'LIST':
-                list(socket, clientName)
+                list(dataPort, clientName)
                 break
 
             case 'STOR':
@@ -58,17 +59,21 @@ const server = net.createServer((socket) => {
 
 console.log(`Listening at ${host} on port ${port}`)
 
-list = (socket) => {
-    fs.readdir(dir, (error, file) => {
-        if (error) {
-            socket.error = true
-        } else {
-            file.forEach((result) => {
-                stats = fs.statSync(path.join(dir, result))
-                socket.write(`${result}\n`)
-            })
-        }
+list = (port) => {
+    dataSocket.connect(9189, host, () => {
+        console.log('yay connected')
     })
+    dataSocket.write('test')
+    // fs.readdir(dir, (error, file) => {
+    //     if (error) {
+    //         dataSocket.error = true
+    //     } else {
+    //         file.forEach((result) => {
+    //             stats = fs.statSync(path.join(dir, result))
+    //             dataSocket.write(`${result}\n`)
+    //         })
+    //     }
+    // })
 }
 
 retr = (file) => {
