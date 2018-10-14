@@ -7,9 +7,7 @@ const port = 9381
 let dataPort = port
 
 const controlSocket = new net.Socket()
-// clientSocket.setEncoding('utf8')
 const dataSocket = new net.Socket()
-// dataSocket.setEncoding('utf8')
 
 let io = readline.createInterface({
     input: process.stdin,
@@ -41,10 +39,14 @@ io.on('line', (line) => {
                 console.log('connected')
             })
 
-<<<<<<< HEAD
+            dataSocket.on('data', (data) => {
+                console.log('data socket data')
+            })
 
-=======
->>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
+            controlSocket.on('data', (data) => {
+                console.log(data.toString())
+            })
+
             dataSocket.destroy()
             break
 

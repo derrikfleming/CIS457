@@ -11,25 +11,12 @@ let clientNum = 0
 const dir = process.cwd()
 
 const server = net.createServer((socket) => {
-<<<<<<< HEAD
-    console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
-
-    // Identify this client
-    socket.name = socket.remoteAddress + ":" + socket.remotePort
-=======
->>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
 
     clientNum++
     socket.nickname = `Client ${clientNum}`
     let clientName = socket.nickname;
 
-<<<<<<< HEAD
-    // socket.on('connection', () => {
-    //     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
-    // })
-=======
     console.log(`Server: ${clientName} has connected from ${socket.remoteAddress}`)
->>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
 
     socket.on('end', () => {
         console.log(`Server: Client ${clientName} disconnected`)
@@ -50,13 +37,8 @@ const server = net.createServer((socket) => {
 
         switch (command) {
             case 'LIST':
-<<<<<<< HEAD
-                list(dataPort)
-                break
-=======
                 list(socket, clientName)
-            break
->>>>>>> ed3a9af73f9964624570ef52d9fb3f6e33e8dfdb
+                break
 
             case 'STOR':
                 stor(fileName)
@@ -76,9 +58,17 @@ const server = net.createServer((socket) => {
 
 console.log(`Listening at ${host} on port ${port}`)
 
-list = (socket, clientName) => {
-    console.log('list some things')
-    socket.write(`You have been given client name ${clientName}`)
+list = (socket) => {
+    fs.readdir(dir, (error, file) => {
+        if (error) {
+            socket.error = true
+        } else {
+            file.forEach((result) => {
+                stats = fs.statSync(path.join(dir, result))
+                socket.write(`${result}\n`)
+            })
+        }
+    })
 }
 
 retr = (file) => {
