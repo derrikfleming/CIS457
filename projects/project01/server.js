@@ -13,13 +13,13 @@ const server = net.createServer((socket) => {
     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
 
     // Identify this client
-    socket.name = socket.remoteAddress + ":" + socket.remotePort 
+    socket.name = socket.remoteAddress + ":" + socket.remotePort
 
     // Put this new client in the list
     clients.push(socket);
     console.log(clients)
 
-    // socket.on('connection', () => { 
+    // socket.on('connection', () => {
     //     console.log(`Server: Client ${socket.remoteAddress} ${socket.remotePort}`);
     // })
 
@@ -44,19 +44,19 @@ const server = net.createServer((socket) => {
         switch (command) {
             case 'LIST':
                 list(dataPort)
-            break
+                break
 
             case 'STOR':
                 stor(fileName)
-            break
+                break
 
             case 'RETR':
                 retr(fileName)
-            break
+                break
 
             default:
                 console.log('INVALID COMMAND')
-            break
+                break
         }
 
         // Call the command.

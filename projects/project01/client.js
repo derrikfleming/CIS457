@@ -12,82 +12,82 @@ const dataSocket = new net.Socket()
 // dataSocket.setEncoding('utf8')
 
 let io = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: '>'
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '>'
 })
 
 io.on('line', (line) => {
 
-  let commandTokens = line.split(' ')
-  let command = commandTokens[0]
-  if (commandTokens.length > 1) filePath = commandTokens[1]
+    let commandTokens = line.split(' ')
+    let command = commandTokens[0]
+    if (commandTokens.length > 1) filePath = commandTokens[1]
 
-  switch (command) {
+    switch (command) {
 
-    // Connect to the FTP server
-    case 'CONNECT':
-      controlSocket.connect(port, host, () => {
-        console.log('Client: Connected to server')
-        // controlSocket.write('Hallo Spaceboy.')
-      })
-      break
+        // Connect to the FTP server
+        case 'CONNECT':
+            controlSocket.connect(port, host, () => {
+                console.log('Client: Connected to server')
+                // controlSocket.write('Hallo Spaceboy.')
+            })
+            break
 
-    // List all files on the server
-    case 'LIST':
-      dataPort += 2
-      controlSocket.write(`${dataPort} LIST`)
+        // List all files on the server
+        case 'LIST':
+            dataPort += 2
+            controlSocket.write(`${dataPort} LIST`)
 
-      dataSocket.connect(dataPort, host, () => {
-        console.log('connected')
-      })
+            dataSocket.connect(dataPort, host, () => {
+                console.log('connected')
+            })
 
 
-      dataSocket.destroy()
-      break
+            dataSocket.destroy()
+            break
 
-    // Store a file on the server
-    case 'STOR':
-      if (filePath) {
-        dataPort += 2
+        // Store a file on the server
+        case 'STOR':
+            if (filePath) {
+                dataPort += 2
 
-        controlSocket.write(`${dataPort} STOR ${filePath}`)
-        fs.readFile(filePath, (error, data) => {
-          if (error) console.log('There was an error reading the file')
-          else dataSocket.end(data)
-        })
-        dataSocket.destroy()
-      } else {
-        console.log('INVALID COMMAND: no filepath was entered')
-      }
-      break
+                controlSocket.write(`${dataPort} STOR ${filePath}`)
+                fs.readFile(filePath, (error, data) => {
+                    if (error) console.log('There was an error reading the file')
+                    else dataSocket.end(data)
+                })
+                dataSocket.destroy()
+            } else {
+                console.log('INVALID COMMAND: no filepath was entered')
+            }
+            break
 
-    // Retrieve a file from the server
-    case 'RETR':
+        // Retrieve a file from the server
+        case 'RETR':
 
-      dataPort += 2
-      controlSocket.write(`${dataPort} RETR`)
+            dataPort += 2
+            controlSocket.write(`${dataPort} RETR`)
 
-      dataSocket.listen(dataPort, host)
+            dataSocket.listen(dataPort, host)
 
-      dataSocket.on('data', (data) => {
-        // Retrieve the file from teh server
-        console.log(data)
-      })
+            dataSocket.on('data', (data) => {
+                // Retrieve the file from teh server
+                console.log(data)
+            })
 
-      dataSocket.end()
-      break
+            dataSocket.end()
+            break
 
-    // Close the connection
-    case 'QUIT':
-      controlSocket.end()
-      break
+        // Close the connection
+        case 'QUIT':
+            controlSocket.end()
+            break
 
-    default:
-      console.log(`INVALID COMMAND: '${line.trim()}'`)
-      break
-  }
-  io.prompt()
+        default:
+            console.log(`INVALID COMMAND: '${line.trim()}'`)
+            break
+    }
+    io.prompt()
 })
 
 controlSocket.on('close', () => console.log('Connection closed'))
