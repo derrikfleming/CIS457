@@ -44,7 +44,7 @@ io.on('line', (line) => {
             })
 
             controlSocket.on('data', (data) => {
-                console.log('control socket data')
+                console.log(data.toString())
             })
 
             dataSocket.destroy()

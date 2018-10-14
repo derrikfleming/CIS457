@@ -58,9 +58,17 @@ const server = net.createServer((socket) => {
 
 console.log(`Listening at ${host} on port ${port}`)
 
-list = (socket, clientName) => {
-    console.log('list some things')
-    socket.write(`You have been given client name ${clientName}`)
+list = (socket) => {
+    fs.readdir(dir, (error, file) => {
+        if (error) {
+            socket.error = true
+        } else {
+            file.forEach((result) => {
+                stats = fs.statSync(path.join(dir, result))
+                socket.write(`${result}\n`)
+            })
+        }
+    })
 }
 
 retr = (file) => {
