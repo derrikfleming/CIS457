@@ -3,43 +3,20 @@ import java.net.*;
 import java.util.*;
 
 public class FTPServer {
-    String fromClient;
-
     public static void main(String argv[]) throws Exception {
-        String clientCommand;
-        byte[] data;
-
-        ServerSocket welcomeSocket = new ServerSocket(12000);
-        String frstln;
-
+        int port = 9381;
+        // Establish the listen socket.
+        ServerSocket controlSocket = new ServerSocket(port);
+        // Process HTTP service requests in an infinite loop.
         while (true) {
-            Socket connectionSocket = welcomeSocket.accept();
-            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
-            fromClient = inFromClient.readLine();
-
-            StringTokenizer tokens = new StringTokenizer(fromClient);
-            frstln = tokens.nextToken();
-            port = Integer.parseInt(frstln);
-            clientCommand = tokens.nextToken();
-
-            if (clientCommand.equals("list:")) {
-
-                Socket dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-                DataOutputStream dataOutToClient = new DataOutputStrea(dataSocket.getOutputStream());
-                // ..........................
-
-            }
-
-            dataSocket.close();
-            System.out.println("Data Socket closed");
-        }
-
-        // ......................
-
-        if (clientCommand.equals("retr:")) {
-            // ............................................................
+            // Listen for a TCP connection request.
+            Socket connection = controlSocket.accept();
+            // Construct an object to process the HTTP request message.
+            FTPRequest request = new HttpRequest(connection);
+            // Create a new thread to process the request.
+            Thread thread = new Thread(request);
+            // Start the thread.
+            thread.start();
         }
     }
 }
