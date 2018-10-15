@@ -12,10 +12,46 @@ final class FTPRequest implements Runnable {
     public FTPRequest(Socket socket) throws Exception {
         try {
             controlSocket = socket;
-            outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+            outToClient = new DataOutputStream(controlSocket.getOutputStream());
+            inFromClient = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         } catch (Exception e) {
-            System.println(e);
+            System.out.println(e);
+        }
+    }
+
+    void list(int port) {
+        try {
+            Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
+            DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+
+            dataSocket.close();
+            System.out.println("Data Socket closed");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    void stor(int port) {
+        try {
+            Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
+            DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+
+            dataSocket.close();
+            System.out.println("Data Socket closed");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    void retr(int port) {
+        try {
+            Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
+            DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+
+            dataSocket.close();
+            System.out.println("Data Socket closed");
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -32,6 +68,7 @@ final class FTPRequest implements Runnable {
         String fromClient;
         String clientCommand;
         byte[] data;
+        int port;
 
         ServerSocket welcomeSocket = new ServerSocket(12000);
         String frstln;
@@ -39,27 +76,27 @@ final class FTPRequest implements Runnable {
         while (true) {
             fromClient = inFromClient.readLine();
 
+            System.out.println("Command from client: " + inFromClient);
+
             StringTokenizer tokens = new StringTokenizer(fromClient);
             frstln = tokens.nextToken();
             port = Integer.parseInt(frstln);
             clientCommand = tokens.nextToken();
 
             if (clientCommand.equals("list:")) {
-
-                Socket dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-                DataOutputStream dataOutToClient = new DataOutputStrea(dataSocket.getOutputStream());
-                // ..........................
-
+                list(port);
             } else if (clientCommand.equals("retr:")) {
-                // ............................................................
-            } else if
+                retr(port);
+            } else if (clientCommand.equals("stor:")) {
+                stor(port);
+            } else if (clientCommand.equals("quit:")) {
 
-            dataSocket.close();
-            System.out.println("Data Socket closed");
+            } else {
+
+            }
         }
 
         // ......................
-
 
     }
 }

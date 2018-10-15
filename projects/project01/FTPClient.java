@@ -15,6 +15,8 @@ class FTPClient {
         boolean notEnd = true;
         String statusCode;
         boolean clientgo = true;
+        int controlPort = 9381;
+        int port = port1;
 
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
         sentence = inFromUser.readLine();
@@ -23,10 +25,10 @@ class FTPClient {
         if (sentence.startsWith("connect")) {
             String serverName = tokens.nextToken(); // pass the connect command
             serverName = tokens.nextToken();
-            port1 = Integer.parseInt(tokens.nextToken());
+            controlPort = Integer.parseInt(tokens.nextToken());
             System.out.println("You are connected to " + serverName);
 
-            Socket ControlSocket = new Socket(serverName, port1);
+            Socket ControlSocket = new Socket(serverName, controlPort);
 
             while (isOpen && clientgo) {
 
@@ -54,19 +56,20 @@ class FTPClient {
 
                     welcomeData.close();
                     dataSocket.close();
-                    System.out
-                            .println("\nWhat would you like to do next: \n retr: file.txt ||stor: file.txt  || close");
-
+                    System.out.println("\nWhat would you like to do next:\n retr: file.txt ||stor: file.txt  || close");
                 } else if (sentence.startsWith("retr: ")) {
                     // ....................................................
                 } else if (sentence.startsWith("stor: ")) {
 
-                } else if (sentence.startsWith("close: ")) {
+                } else if (sentence.equals("close: ")) {
 
                 } else {
-
+                    System.out.println(
+                            "\nCommand not recognized try: \n list: || retr: file.txt ||stor: file.txt  || close");
                 }
             }
+        } else {
+            System.out.println("\nCommand not recognized:\nPlease CONNECT to a server first.");
         }
     }
 }
