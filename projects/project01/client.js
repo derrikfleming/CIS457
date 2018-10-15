@@ -7,13 +7,17 @@ const port = 9381
 let dataPort = port
 
 const controlSocket = new net.Socket()
-const dataSocket = new net.Socket()
+controlSocket.setEncoding('utf8')
+
+process.stdin.setEncoding('utf8')
 
 let io = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
     prompt: '>'
 })
+
+io.prompt()
 
 io.on('line', (line) => {
 
@@ -33,25 +37,39 @@ io.on('line', (line) => {
         // List all files on the server
         case 'LIST':
             dataPort += 2
+
+            let dataServer = net.createServer((dataSocket) => {
+                dataSocket.on('data', (data) => {
+                    console.log(`data socket data: ${data}`)
+                })
+
+                // dataSocket.destroy()
+            }).listen(dataPort, host)
+
+            dataServer.on('listening', function () {
+                console.log(`listening on ${dataPort}`);
+            });
+            dataServer.on('error', function (err) {
+                if (err.code == 'EADDRINUSE') {
+                    console.warn('Address in use, retrying...');
+                    setTimeout(() => {
+                        dataServer.close();
+                        dataPort += 2
+                        dataServer.listen(dataPort);
+                    }, 1000);
+                }
+                else {
+                    console.error(err);
+                }
+            });
+
             controlSocket.write(`${dataPort} LIST`)
-
-            dataSocket.connect(dataPort, host, () => {
-                console.log('connected')
-            })
-
-            dataSocket.on('data', (data) => {
-                console.log('data socket data')
-            })
-
-            controlSocket.on('data', (data) => {
-                console.log(data.toString())
-            })
-
-            dataSocket.destroy()
             break
 
         // Store a file on the server
         case 'STOR':
+            // TODO
+
             if (filePath) {
                 dataPort += 2
 
@@ -68,18 +86,7 @@ io.on('line', (line) => {
 
         // Retrieve a file from the server
         case 'RETR':
-
-            dataPort += 2
-            controlSocket.write(`${dataPort} RETR`)
-
-            dataSocket.listen(dataPort, host)
-
-            dataSocket.on('data', (data) => {
-                // Retrieve the file from teh server
-                console.log(data)
-            })
-
-            dataSocket.end()
+            // TODO
             break
 
         // Close the connection
