@@ -12,7 +12,7 @@ public class FTPServer {
             // Listen for a TCP connection request.
             Socket connection = controlSocket.accept();
             // Construct an object to process the HTTP request message.
-            FTPRequest request = new HttpRequest(connection);
+            FTPRequest request = new FTPRequest(connection);
             // Create a new thread to process the request.
             Thread thread = new Thread(request);
             // Start the thread.

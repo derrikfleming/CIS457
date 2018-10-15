@@ -4,11 +4,19 @@ import java.util.*;
 
 final class FTPRequest implements Runnable {
     final static String CRLF = "\r\n";
-    Socket socket;
+    Socket controlSocket;
+    BufferedReader inFromClient;
+    DataOutputStream outToClient;
 
     // Constructor
     public FTPRequest(Socket socket) throws Exception {
-        this.socket = socket;
+        try {
+            controlSocket = socket;
+            outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+            inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+        } catch (Exception e) {
+            System.println(e);
+        }
     }
 
     // Implement the run() method of the Runnable interface.
@@ -29,10 +37,6 @@ final class FTPRequest implements Runnable {
         String frstln;
 
         while (true) {
-            Socket connectionSocket = welcomeSocket.accept();
-            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
             fromClient = inFromClient.readLine();
 
             StringTokenizer tokens = new StringTokenizer(fromClient);
@@ -46,7 +50,9 @@ final class FTPRequest implements Runnable {
                 DataOutputStream dataOutToClient = new DataOutputStrea(dataSocket.getOutputStream());
                 // ..........................
 
-            }
+            } else if (clientCommand.equals("retr:")) {
+                // ............................................................
+            } else if
 
             dataSocket.close();
             System.out.println("Data Socket closed");
@@ -54,8 +60,6 @@ final class FTPRequest implements Runnable {
 
         // ......................
 
-        if (clientCommand.equals("retr:")) {
-            // ............................................................
-        }
+
     }
 }
