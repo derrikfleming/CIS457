@@ -114,7 +114,7 @@ class FTPClient {
                 } else if (sentence.equals("QUIT")) {
                     isOpen = false;
                     clientgo = false;
-
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
                     System.out.println("Client is disconnecting");
                     controlSocket.close();
                 } else {
