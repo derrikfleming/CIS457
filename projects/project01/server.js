@@ -9,9 +9,12 @@ const port = 9381
 let clientNum = 0
 
 const dir = process.cwd()
-const dataSocket = new net.Socket()
+
+process.stdin.setEncoding('utf8')
 
 const server = net.createServer((controlSocket) => {
+
+    controlSocket.setEncoding('utf8')
 
     clientNum++
     controlSocket.nickname = `Client ${clientNum}`
@@ -25,8 +28,7 @@ const server = net.createServer((controlSocket) => {
 
     controlSocket.on('data', (data) => {
         // Parse the command.
-        // TODO: _why_ is toString necessary?!?
-        let dataString = data.toString().split(' ');
+        let dataString = data.split(' ');
         let dataPort = dataString[0]
         let command = dataString[1]
         if (dataString.length > 2) {
@@ -38,9 +40,13 @@ const server = net.createServer((controlSocket) => {
 
         switch (command) {
             case 'LIST':
+<<<<<<< HEAD
                 dataSocket.connect(dataPort, host, () => {
                     dataSocket.write('test')
                 })
+=======
+                list(dataPort, controlSocket.remoteAddress)
+>>>>>>> a554c20832a2cd79ea64dcebe01c09d7891cd379
                 break
 
             case 'STOR':
@@ -61,9 +67,19 @@ const server = net.createServer((controlSocket) => {
 
 console.log(`Listening at ${host} on port ${port}`)
 
-list = (port) => {
+// Catch all uncaught errors and log to console.
+process.on('uncaughtException', function (err) {
+    console.log(err);
+});
+
+
+function list(port, host) {
+    let dataSocket = new net.Socket()
+    // dataSocket.setEncoding('utf8')
+    console.log(`before dataSocket.connect(${port} ${host})`)
     dataSocket.connect(port, host, () => {
         console.log('yay connected')
+        dataSocket.write('test')
     })
     // fs.readdir(dir, (error, file) => {
     //     if (error) {
