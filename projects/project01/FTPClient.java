@@ -6,6 +6,7 @@ import java.lang.*;
 import javax.swing.*;
 
 class FTPClient {
+    final static String CRLF = "\r\n";
 
     public static String getUTF8String(InputStream in) throws IOException {
         Reader r = new InputStreamReader(in, "UTF-8");
@@ -67,7 +68,7 @@ class FTPClient {
                     dataPort = dataPort + 2;
                     System.out.print("writing command to server: " + dataPort + " " + sentence + " " + '\n');
 
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
                     Socket dataSocket = server.accept();
@@ -92,7 +93,7 @@ class FTPClient {
                     dataPort = dataPort + 2;
 
                     System.out.print("writing command to server:\n" + dataPort + " " + sentence + " " + '\n');
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
                     Socket dataSocket = server.accept();
@@ -102,7 +103,7 @@ class FTPClient {
                     dataSocket.close();
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
                     Socket dataSocket = server.accept();

@@ -29,11 +29,10 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-
             // ......................
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(ftpRootDir)) {
                 for (Path file: stream) {
-                    dataOutToClient.writeBytes(file.getFileName().toString() + "\n");
+                    dataOutToClient.writeBytes(file.getFileName().toString() + CRLF);
                     System.out.println(file.getFileName().toString());
                 }
             } catch (IOException | DirectoryIteratorException x) {
