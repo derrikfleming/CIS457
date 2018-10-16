@@ -1,4 +1,7 @@
 import java.io.*;
+import java.nio.*;
+import java.nio.file.*;
+// import java.nio.file.Path;
 import java.net.*;
 import java.util.*;
 
@@ -7,6 +10,8 @@ final class FTPRequest implements Runnable {
     Socket controlSocket;
     BufferedReader inFromClient;
     DataOutputStream outToClient;
+    // The root directory for the ftp server.
+    Path ftpRootDir = Paths.get("./ftp_root_dir");
 
     // Constructor
     public FTPRequest(Socket socket) throws Exception {
@@ -24,7 +29,19 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+
             // ......................
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(ftpRootDir)) {
+                for (Path file: stream) {
+                    dataOutToClient.writeBytes(file.getFileName().toString() + "\n");
+                    System.out.println(file.getFileName().toString());
+                }
+            } catch (IOException | DirectoryIteratorException x) {
+                // IOException can never be thrown by the iteration.
+                // In this snippet, it can only be thrown by newDirectoryStream.
+                System.err.println(x);
+            }
+
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
