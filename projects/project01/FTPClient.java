@@ -12,6 +12,12 @@ class FTPClient {
         String modifiedSentence;
         boolean isOpen = true;
         int number = 1;
+
+        Socket controlSocket;
+        DataOutputStream outToServer;
+        DataInputStream inFromServer;
+        int controlPort, dataPort;
+
         boolean notEnd = true;
         String statusCode;
         boolean clientgo = true;
@@ -20,73 +26,77 @@ class FTPClient {
         sentence = inFromUser.readLine();
         StringTokenizer tokens = new StringTokenizer(sentence);
 
-        if (sentence.startsWith("connect")) {
+        if (sentence.startsWith("CONNECT")) {
             String serverName = tokens.nextToken(); // pass the connect command
             serverName = tokens.nextToken();
-            int controlPort = Integer.parseInt(tokens.nextToken());
-            int port = controlPort;
-            System.out.println("You are connecting to " + serverName + "\n");
-            System.out.println("On port:  " + controlPort + "\n");
+            controlPort = Integer.parseInt(tokens.nextToken());
+            dataPort = controlPort + 1;
 
-            Socket controlSocket = new Socket(serverName, controlPort);
+            System.out.print("You are connecting to " + serverName + "\n");
+            System.out.print("On dataPort:  " + controlPort + "\n");
+
+            controlSocket = new Socket(serverName, controlPort);
 
             System.out.println("You are connected to " + serverName + ":" + controlPort);
 
             while (isOpen && clientgo) {
 
-                DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
+                outToServer = new DataOutputStream(controlSocket.getOutputStream());
 
-                DataInputStream inFromServer = new DataInputStream(
-                        new BufferedInputStream(controlSocket.getInputStream()));
+                inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
 
                 sentence = inFromUser.readLine();
 
-                if (sentence.equals("list:")) {
+                if (sentence.equals("LIST")) {
+                    dataPort = dataPort + 2;
+                    System.out.print("writing command to server:\n" + dataPort + " " + sentence + " " + '\n');
 
-                    port = port + 2;
-                    outToServer.writeBytes(port + " " + sentence + " " + '\n');
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
 
-                    ServerSocket welcomeData = new ServerSocket(port);
-                    Socket dataSocket = welcomeData.accept();
-
+                    ServerSocket server = new ServerSocket(dataPort);
+                    Socket dataSocket = server.accept();
                     DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
+
                     while (notEnd) {
                         modifiedSentence = inData.readUTF();
+                        // it's no wonder that there's a:
+                        // Exception in thread "main" java.io.EOFException
                         // ........................................
                     }
-
-                    welcomeData.close();
                     dataSocket.close();
+
+                    System.out.println("datasocket is closed");
                     System.out.println("\nWhat would you like to do next:\n retr: file.txt ||stor: file.txt  || close");
                 } else if (sentence.startsWith("RETR ")) {
-                    port = port + 2;
-                    outToServer.writeBytes(port + " " + sentence + " " + '\n');
+                    dataPort = dataPort + 2;
 
-                    ServerSocket welcomeData = new ServerSocket(port);
-                    Socket dataSocket = welcomeData.accept();
+                    System.out.print("writing command to server:\n" + dataPort + " " + sentence + " " + '\n');
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
+
+                    ServerSocket server = new ServerSocket(dataPort);
+                    Socket dataSocket = server.accept();
                     DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
 
                     // ......................
                     dataSocket.close();
                 } else if (sentence.startsWith("STOR ")) {
-                    port = port + 2;
-                    outToServer.writeBytes(port + " " + sentence + " " + '\n');
+                    dataPort = dataPort + 2;
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
 
-                    ServerSocket welcomeData = new ServerSocket(port);
-                    Socket dataSocket = welcomeData.accept();
+                    ServerSocket server = new ServerSocket(dataPort);
+                    Socket dataSocket = server.accept();
                     DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
 
                     // ......................
                     dataSocket.close();
-                } else if (sentence.equals("QUIT ")) {
+                } else if (sentence.equals("QUIT")) {
                     isOpen = false;
                     clientgo = false;
 
                     System.out.println("Client is disconnecting");
                     controlSocket.close();
                 } else {
-                    System.out
-                            .println("\nCommand not recognized try: \n LIST || RETR file.txt ||STOR file.txt  || quit");
+                    System.out.println("\nCommand not recognized\n");
                 }
             }
         } else {

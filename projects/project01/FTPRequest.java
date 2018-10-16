@@ -9,10 +9,13 @@ final class FTPRequest implements Runnable {
     DataOutputStream outToClient;
 
     // Constructor
-    public FTPRequest(Socket socket) throws Exception {
+    public FTPRequest(Socket socket, int threadID) throws Exception {
         try {
+            // thread ID unimplemented fully
+            System.out.println("Hi, I'm thread: " + threadID);
             controlSocket = socket;
             outToClient = new DataOutputStream(controlSocket.getOutputStream());
+
             inFromClient = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         } catch (Exception e) {
             System.out.println(e);
@@ -23,7 +26,7 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-
+            // ......................
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
@@ -35,7 +38,7 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-
+            // ......................
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
@@ -47,7 +50,7 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-
+            // ......................
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
@@ -58,6 +61,7 @@ final class FTPRequest implements Runnable {
     // Implement the run() method of the Runnable interface.
     public void run() {
         try {
+            System.out.println("A server thread has started. \nGetting ready to process req's");
             processRequest();
         } catch (Exception e) {
             System.out.println(e);
@@ -65,38 +69,38 @@ final class FTPRequest implements Runnable {
     }
 
     private void processRequest() throws Exception {
-        String fromClient;
+        String clientsCommand;
         String clientCommand;
         byte[] data;
         int port;
 
-        ServerSocket welcomeSocket = new ServerSocket(12000);
         String frstln;
 
         while (true) {
-            fromClient = inFromClient.readLine();
+            System.out.println("Waiting for requests...");
+            clientsCommand = inFromClient.readLine();
 
-            System.out.println("Command from client: " + inFromClient);
+            System.out.println("Command from client: " + clientsCommand);
 
-            StringTokenizer tokens = new StringTokenizer(fromClient);
+            StringTokenizer tokens = new StringTokenizer(clientsCommand);
             frstln = tokens.nextToken();
             port = Integer.parseInt(frstln);
             clientCommand = tokens.nextToken();
 
-            if (clientCommand.equals("list:")) {
+            if (clientCommand.equals("LIST")) {
                 list(port);
-            } else if (clientCommand.equals("retr:")) {
+            } else if (clientCommand.equals("RETR")) {
                 retr(port);
-            } else if (clientCommand.equals("stor:")) {
+            } else if (clientCommand.equals("STOR")) {
                 stor(port);
-            } else if (clientCommand.equals("quit:")) {
+            } else if (clientCommand.equals("QUIT")) {
+                System.out.println("Terminating connection with client");
+                controlSocket.close();
+            } else if (clientCommand.equals("INIT")) {
 
             } else {
 
             }
         }
-
-        // ......................
-
     }
 }
