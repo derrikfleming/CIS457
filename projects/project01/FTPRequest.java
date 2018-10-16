@@ -70,11 +70,14 @@ final class FTPRequest implements Runnable {
             // ......................
 
             Path file = Paths.get(ftpRootDir + "/" + filename);
+
+            // FTPClient.readFileToDataOutputStream(file, dataOutToClient);
             try (InputStream in = Files.newInputStream(file);
                 BufferedReader reader =
                 new BufferedReader(new InputStreamReader(in))) {
                 String line = null;
                 while ((line = reader.readLine()) != null) {
+                    dataOutToClient.writeBytes(line);
                     System.out.println(line);
                 }
             } catch (IOException x) {

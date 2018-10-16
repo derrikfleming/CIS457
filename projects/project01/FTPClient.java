@@ -31,6 +31,20 @@ class FTPClient {
         return sb.toString();
     }
 
+    public static void readFileToDataOutputStream(Path filename, DataOutputStream dataOutputStream) {
+        try (InputStream in = Files.newInputStream(filename);
+                BufferedReader reader =
+                new BufferedReader(new InputStreamReader(in))) {
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    dataOutputStream.writeBytes(line);
+                    System.out.println(line);
+                }
+            } catch (IOException x) {
+                System.err.println(x);
+            }
+    }
+
     public static void main(String argv[]) throws Exception {
         String sentence;
         String modifiedSentence;
@@ -82,7 +96,6 @@ class FTPClient {
                 if (sentence.equals("LIST")) {
                     dataPort = dataPort + 2;
                     System.out.println("writing command to server: " + dataPort + " " + sentence);
-
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
@@ -102,7 +115,7 @@ class FTPClient {
                     dataSocket.close();
                     server.close();
                     System.out.println("datasocket is closed");
-                    System.out.println("\nWhat would you like to do next:\n retr: file.txt ||stor: file.txt  || close");
+                    System.out.println("\nWhat would you like to do next:\n retr: name.txt ||stor: file.txt  || close");
 
                 } else if (sentence.startsWith("RETR ")) {
                     dataPort = dataPort + 2;
@@ -112,10 +125,21 @@ class FTPClient {
 
                     ServerSocket server = new ServerSocket(dataPort);
                     Socket dataSocket = server.accept();
-                    DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
 
-                    // ......................
+                    try (DataInputStream inData = new DataInputStream(
+                                new BufferedInputStream(dataSocket.getInputStream()))) {
+
+                        modifiedSentence = getUTF8String(inData);
+                        System.out.println(modifiedSentence);
+
+                    } catch (IOException e) {
+                        // Output unexpected IOExceptions.
+                        System.out.println(e);
+                    }
+
                     dataSocket.close();
+                    server.close();
+                    System.out.println("datasocket is closed");
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
