@@ -44,8 +44,8 @@ class FTPClient {
             controlPort = Integer.parseInt(tokens.nextToken());
             dataPort = controlPort + 1;
 
-            System.out.print("You are connecting to " + serverName + "\n");
-            System.out.print("On dataPort:  " + controlPort + "\n");
+            System.out.println("You are connecting to " + serverName);
+            System.out.println("On dataPort:  " + controlPort);
 
             controlSocket = new Socket(serverName, controlPort);
             // try {
@@ -66,7 +66,7 @@ class FTPClient {
 
                 if (sentence.equals("LIST")) {
                     dataPort = dataPort + 2;
-                    System.out.print("writing command to server: " + dataPort + " " + sentence + " " + '\n');
+                    System.out.println("writing command to server: " + dataPort + " " + sentence);
 
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
@@ -92,7 +92,7 @@ class FTPClient {
                 } else if (sentence.startsWith("RETR ")) {
                     dataPort = dataPort + 2;
 
-                    System.out.print("writing command to server:\n" + dataPort + " " + sentence + " " + '\n');
+                    System.out.println("writing command to server:\n" + dataPort + " " + sentence);
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
