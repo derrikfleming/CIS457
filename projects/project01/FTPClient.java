@@ -78,29 +78,13 @@ class FTPClient {
                         modifiedSentence = getUTF8String(inData);
                         System.out.println(modifiedSentence);
 
-                        // while (notEnd) {
-                        //     // it's no wonder that there's a:
-                        //     // Exception in thread "main" java.io.EOFException
-                        //     // ........................................
-                        //     // Use inner exception block to determine end of file.
-                        //     try {
-                        //         // modifiedSentence = inData.readUTF();
-                        //         System.out.println(modifiedSentence.toString());
-                        //     } catch (EOFException e) {
-                        //         // Break while loop when file ends.
-                        //         notEnd = false;
-                        //     } catch (IOException e) {
-                        //         // Output unexpected IOExceptions.
-                        //         System.out.println(e);
-                        //     }
-                        // }
                     } catch (IOException e) {
                         // Output unexpected IOExceptions.
                         System.out.println(e);
                     }
 
-                    // notEnd = true;
                     dataSocket.close();
+                    server.close();
                     System.out.println("datasocket is closed");
                     System.out.println("\nWhat would you like to do next:\n retr: file.txt ||stor: file.txt  || close");
 
