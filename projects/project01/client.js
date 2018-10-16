@@ -6,8 +6,9 @@ const host = 'localhost'
 const port = 9381
 let dataPort = port
 
+var client
+
 const controlSocket = new net.Socket()
-const dataSocket = new net.Socket()
 
 let io = readline.createInterface({
     input: process.stdin,
@@ -33,21 +34,19 @@ io.on('line', (line) => {
         // List all files on the server
         case 'LIST':
             dataPort += 2
+
+            client = net.createServer((dataSocket) => {
+                dataSocket.on('connect', () => {
+                    console.log('hey someone connected')
+                })
+                console.log('listening on dataport')
+                dataSocket.on('data', (data) => {
+                    console.log('data socket data')
+                })
+                dataSocket.destroy()
+
+            }).listen(dataPort, host)
             controlSocket.write(`${dataPort} LIST`)
-
-            dataSocket.connect(dataPort, host, () => {
-                console.log('connected')
-            })
-
-            dataSocket.on('data', (data) => {
-                console.log('data socket data')
-            })
-
-            controlSocket.on('data', (data) => {
-                console.log(data.toString())
-            })
-
-            dataSocket.destroy()
             break
 
         // Store a file on the server

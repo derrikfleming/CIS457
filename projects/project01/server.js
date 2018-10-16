@@ -38,7 +38,9 @@ const server = net.createServer((controlSocket) => {
 
         switch (command) {
             case 'LIST':
-                list(dataPort, clientName)
+                dataSocket.connect(dataPort, host, () => {
+                    dataSocket.write('test')
+                })
                 break
 
             case 'STOR':
@@ -60,10 +62,9 @@ const server = net.createServer((controlSocket) => {
 console.log(`Listening at ${host} on port ${port}`)
 
 list = (port) => {
-    dataSocket.connect(9189, host, () => {
+    dataSocket.connect(port, host, () => {
         console.log('yay connected')
     })
-    dataSocket.write('test')
     // fs.readdir(dir, (error, file) => {
     //     if (error) {
     //         dataSocket.error = true

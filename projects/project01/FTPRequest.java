@@ -9,10 +9,10 @@ final class FTPRequest implements Runnable {
     DataOutputStream outToClient;
 
     // Constructor
-    public FTPRequest(Socket socket, int threadID) throws Exception {
+    public FTPRequest(Socket socket) throws Exception {
         try {
             // thread ID unimplemented fully
-            System.out.println("Hi, I'm thread: " + threadID);
+            // System.out.println("Hi, I'm thread: " + threadID);
             controlSocket = socket;
             outToClient = new DataOutputStream(controlSocket.getOutputStream());
 
