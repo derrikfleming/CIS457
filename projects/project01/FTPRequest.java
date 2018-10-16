@@ -25,6 +25,7 @@ final class FTPRequest implements Runnable {
         }
     }
 
+    // List all files on the server
     void list(int port) {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
@@ -48,6 +49,7 @@ final class FTPRequest implements Runnable {
         }
     }
 
+    // Store a file on the server
     void stor(int port) {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
@@ -60,11 +62,25 @@ final class FTPRequest implements Runnable {
         }
     }
 
-    void retr(int port) {
+    // Retrieve a file from the server
+    void retr(int port, String filename) {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
             // ......................
+
+            Path file = Paths.get(ftpRootDir + "/" + filename);
+            try (InputStream in = Files.newInputStream(file);
+                BufferedReader reader =
+                new BufferedReader(new InputStreamReader(in))) {
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            } catch (IOException x) {
+                System.err.println(x);
+            }
+
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
@@ -83,8 +99,9 @@ final class FTPRequest implements Runnable {
     }
 
     private void processRequest() throws Exception {
-        String clientsCommand;
-        String clientCommand;
+        String clientsCommand = "";
+        String clientCommand = "";
+        String commandTarget = "";
         byte[] data;
         int port;
 
@@ -94,26 +111,33 @@ final class FTPRequest implements Runnable {
             System.out.println("Waiting for requests...");
             clientsCommand = inFromClient.readLine();
 
-            System.out.println("Command from client: " + clientsCommand);
-
-            StringTokenizer tokens = new StringTokenizer(clientsCommand);
-            frstln = tokens.nextToken();
-            port = Integer.parseInt(frstln);
-            clientCommand = tokens.nextToken();
-
-            if (clientCommand.equals("LIST")) {
-                list(port);
-            } else if (clientCommand.equals("RETR")) {
-                retr(port);
-            } else if (clientCommand.equals("STOR")) {
-                stor(port);
-            } else if (clientCommand.equals("QUIT")) {
-                System.out.println("Terminating connection with client");
-                controlSocket.close();
-            } else if (clientCommand.equals("INIT")) {
-
+            if (clientCommand == null) {
+                // Client probably disconnected...
             } else {
+                System.out.println("Command from client: " + clientsCommand);
 
+                StringTokenizer tokens = new StringTokenizer(clientsCommand);
+                frstln = tokens.nextToken();
+                port = Integer.parseInt(frstln);
+                clientCommand = tokens.nextToken();
+                if (tokens.hasMoreTokens()) {
+                    commandTarget = FTPClient.getTokensToString(tokens);
+                }
+
+                if (clientCommand.equals("LIST")) {
+                    list(port);
+                } else if (clientCommand.equals("RETR")) {
+                    retr(port, commandTarget);
+                } else if (clientCommand.equals("STOR")) {
+                    stor(port);
+                } else if (clientCommand.equals("QUIT")) {
+                    System.out.println("Terminating connection with client");
+                    controlSocket.close();
+                } else if (clientCommand.equals("INIT")) {
+
+                } else {
+
+                }
             }
         }
     }

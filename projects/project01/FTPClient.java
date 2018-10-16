@@ -1,4 +1,7 @@
 import java.io.*;
+import java.nio.*;
+import java.nio.file.*;
+// import java.nio.file.Path;
 import java.net.*;
 import java.util.*;
 import java.text.*;
@@ -19,6 +22,15 @@ class FTPClient {
         return sb.toString();
     }
 
+    public static String getTokensToString(StringTokenizer tokens) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(tokens.nextToken());
+        while (tokens.hasMoreTokens()) {
+            sb.append(" " + tokens.nextToken());
+        }
+        return sb.toString();
+    }
+
     public static void main(String argv[]) throws Exception {
         String sentence;
         String modifiedSentence;
@@ -33,6 +45,9 @@ class FTPClient {
         boolean notEnd = true;
         String statusCode;
         boolean clientgo = true;
+
+        // The root directory for the ftp server.
+        Path ftpRootDir = Paths.get("./ftp_root_dir");
 
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
         sentence = inFromUser.readLine();
