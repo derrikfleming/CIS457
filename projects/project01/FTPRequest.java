@@ -11,7 +11,7 @@ final class FTPRequest implements Runnable {
     BufferedReader inFromClient;
     DataOutputStream outToClient;
     // The root directory for the ftp server.
-    Path ftpRootDir = Paths.get("./ftp_root_dir");
+    Path ftpRootDir = Paths.get("./ftp_server_root_dir");
 
     // Constructor
     public FTPRequest(Socket socket) throws Exception {
@@ -78,6 +78,7 @@ final class FTPRequest implements Runnable {
                 String line = null;
                 while ((line = reader.readLine()) != null) {
                     dataOutToClient.writeBytes(line);
+                    // dataOutToClient.writeUTF(line);
                     System.out.println(line);
                 }
             } catch (IOException x) {

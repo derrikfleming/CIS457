@@ -1,11 +1,13 @@
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
+import static java.nio.file.StandardOpenOption.*;
 // import java.nio.file.Path;
 import java.net.*;
 import java.util.*;
-import java.text.*;
-import java.lang.*;
+
+import java.text.
+    *;import java.lang.*;
 import javax.swing.*;
 
 class FTPClient {
@@ -55,13 +57,12 @@ class FTPClient {
         DataOutputStream outToServer;
         DataInputStream inFromServer;
         int controlPort, dataPort;
+        // The root directory for the ftp server.
+        Path ftpRootDir = Paths.get("./ftp_client_root_dir");
 
         boolean notEnd = true;
         String statusCode;
         boolean clientgo = true;
-
-        // The root directory for the ftp server.
-        Path ftpRootDir = Paths.get("./ftp_root_dir");
 
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
         sentence = inFromUser.readLine();
@@ -123,14 +124,43 @@ class FTPClient {
                     System.out.println("writing command to server:\n" + dataPort + " " + sentence);
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
+                    StringTokenizer commandTokens = new StringTokenizer(sentence);
+                    String clientCommand = commandTokens.nextToken();
+                    String commandTarget = "";
+                    if (commandTokens.hasMoreTokens()) {
+                        commandTarget = FTPClient.getTokensToString(commandTokens);
+                    }
+
                     ServerSocket server = new ServerSocket(dataPort);
                     Socket dataSocket = server.accept();
 
                     try (DataInputStream inData = new DataInputStream(
                                 new BufferedInputStream(dataSocket.getInputStream()))) {
 
+
+                        // StringBuffer sb = new StringBuffer();
+                        // try {
+                        //     while (inData.available() > 0) {
+                        //         sb.append(inData.readUTF());
+                        //     }
+                        // } catch (Exception e) {
+                        //     System.err.println(e);
+                        // }
                         modifiedSentence = getUTF8String(inData);
-                        System.out.println(modifiedSentence);
+                        // System.out.println(modifiedSentence);
+
+                        // Convert the string to a byte array.
+                        // byte data[] = sb.toString().getBytes();
+                        byte data[] = modifiedSentence.getBytes();
+                        Path p = Paths.get(ftpRootDir + "/" + commandTarget);
+
+                        try (OutputStream out = new BufferedOutputStream(
+                            Files.newOutputStream(p, CREATE, TRUNCATE_EXISTING))) {
+                            out.write(data, 0, data.length);
+                            System.out.println("File: '" + commandTarget + "' written.");
+                        } catch (IOException x) {
+                            System.err.println(x);
+                        }
 
                     } catch (IOException e) {
                         // Output unexpected IOExceptions.
