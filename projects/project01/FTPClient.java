@@ -170,6 +170,7 @@ class FTPClient {
                     System.out.println("Client is disconnecting");
                     controlSocket.close();
                 } else {
+                    outToServer.writeBytes("");
                     System.out.println("\nCommand not recognized\n");
                 }
             }

@@ -6,6 +6,8 @@ const host = 'localhost'
 const port = 9381
 let dataPort = port
 
+var client
+
 const controlSocket = new net.Socket()
 controlSocket.setEncoding('utf8')
 

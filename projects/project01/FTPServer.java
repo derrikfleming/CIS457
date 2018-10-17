@@ -10,7 +10,7 @@ public class FTPServer {
         // Establish the listen socket.
         ServerSocket controlSocket = new ServerSocket(port);
         // Process HTTP service requests in an infinite loop.
-        while (true) {
+        while (!controlSocket.isClosed()) {
             // Listen for a TCP connection request.
             Socket connection = controlSocket.accept();
             // Construct an object to process the HTTP request message.
@@ -20,5 +20,6 @@ public class FTPServer {
             // Start the thread.
             thread.start();
         }
+        controlSocket.close();
     }
 }

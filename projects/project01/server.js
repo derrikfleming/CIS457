@@ -40,7 +40,13 @@ const server = net.createServer((controlSocket) => {
 
         switch (command) {
             case 'LIST':
+<<<<<<< HEAD
+                dataSocket.connect(dataPort, host, () => {
+                    dataSocket.write('test')
+                })
+=======
                 list(dataPort, controlSocket.remoteAddress)
+>>>>>>> a554c20832a2cd79ea64dcebe01c09d7891cd379
                 break
 
             case 'STOR':
@@ -67,7 +73,7 @@ process.on('uncaughtException', function (err) {
 });
 
 
-function list (port, host) {
+function list(port, host) {
     let dataSocket = new net.Socket()
     // dataSocket.setEncoding('utf8')
     console.log(`before dataSocket.connect(${port} ${host})`)
@@ -75,7 +81,6 @@ function list (port, host) {
         console.log('yay connected')
         dataSocket.write('test')
     })
-
     // fs.readdir(dir, (error, file) => {
     //     if (error) {
     //         dataSocket.error = true
