@@ -66,24 +66,28 @@ final class FTPRequest implements Runnable {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-            // ......................
 
-            Path file = Paths.get(ftpRootDir + "/" + filename);
-            try (InputStream in = Files.newInputStream(file);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+            Path path = Paths.get(ftpRootDir + "/" + filename);
+            File file = new File(path.toString());
+            if (file.exists()) {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+                try {
+                    System.out.println("sending data out");
+                    while ((line = br.readLine()) != null) {
+                        dataOutToClient.writeBytes(line);
+                    }
+                    System.out.println("data sent");
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-            } catch (IOException x) {
-                System.err.println(x);
             }
-
             dataSocket.close();
             System.out.println("Data Socket closed");
         } catch (Exception e) {
             System.out.println(e);
         }
+
     }
 
     // Implement the run() method of the Runnable interface.
@@ -121,7 +125,6 @@ final class FTPRequest implements Runnable {
                 if (tokens.hasMoreTokens()) {
                     commandTarget = FTPClient.getTokensToString(tokens);
                 }
-
                 if (clientCommand.equals("LIST")) {
                     list(port);
                 } else if (clientCommand.equals("RETR")) {
@@ -135,7 +138,6 @@ final class FTPRequest implements Runnable {
 
                 }
             }
-
         }
         this.controlSocket.close();
         return;

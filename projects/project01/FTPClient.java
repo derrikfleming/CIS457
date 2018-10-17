@@ -47,7 +47,7 @@ class FTPClient {
         boolean clientgo = true;
 
         // The root directory for the ftp server.
-        Path ftpRootDir = Paths.get("./ftp_root_dir");
+        Path ftpRootDir = Paths.get("./ftp_client_root_dir/");
 
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
         sentence = inFromUser.readLine();
@@ -106,14 +106,26 @@ class FTPClient {
                 } else if (sentence.startsWith("RETR ")) {
                     dataPort = dataPort + 2;
 
-                    System.out.println("writing command to server:\n" + dataPort + " " + sentence);
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
-
                     ServerSocket server = new ServerSocket(dataPort);
+                    System.out.println("writing command to server: " + dataPort + " " + sentence);
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
                     Socket dataSocket = server.accept();
+                    String[] comTokens = sentence.split("\\s+");
+                    String fileName = comTokens[1];
                     DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
 
-                    // ......................
+                    try {
+                        StringBuffer sb = new StringBuffer();
+                        String line;
+                        while (inData.available() > 0)
+                            sb.append(inData.readUTF());
+
+                        Path path = Paths.get("./ftp_client_root_dir/" + fileName);
+                        Files.write(path, sb.toString().getBytes());
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                    inData.close();
                     dataSocket.close();
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
@@ -123,7 +135,7 @@ class FTPClient {
                     Socket dataSocket = server.accept();
                     DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
 
-                    // ......................
+                    server.close();
                     dataSocket.close();
                 } else if (sentence.equals("QUIT")) {
                     isOpen = false;
