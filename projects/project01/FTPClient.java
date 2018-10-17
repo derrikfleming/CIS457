@@ -31,6 +31,19 @@ class FTPClient {
         return sb.toString();
     }
 
+    public static void readFileToDataOutputStream(Path filename, DataOutputStream dataOutputStream) {
+        try (InputStream in = Files.newInputStream(filename);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                dataOutputStream.writeBytes(line);
+                System.out.println(line);
+            }
+        } catch (IOException x) {
+            System.err.println(x);
+        }
+    }
+
     public static void main(String argv[]) throws Exception {
         String sentence;
         String modifiedSentence;
@@ -127,6 +140,8 @@ class FTPClient {
                     }
                     inData.close();
                     dataSocket.close();
+                    server.close();
+                    System.out.println("datasocket is closed");
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
