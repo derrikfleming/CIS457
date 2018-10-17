@@ -18,7 +18,6 @@ final class FTPRequest implements Runnable {
         try {
             controlSocket = socket;
             outToClient = new DataOutputStream(controlSocket.getOutputStream());
-
             inFromClient = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         } catch (Exception e) {
             System.out.println(e);
@@ -32,7 +31,7 @@ final class FTPRequest implements Runnable {
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
             // ......................
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(ftpRootDir)) {
-                for (Path file: stream) {
+                for (Path file : stream) {
                     dataOutToClient.writeBytes(file.getFileName().toString() + CRLF);
                     System.out.println(file.getFileName().toString());
                 }
@@ -41,9 +40,9 @@ final class FTPRequest implements Runnable {
                 // In this snippet, it can only be thrown by newDirectoryStream.
                 System.err.println(x);
             }
-
+            dataOutToClient.flush();
             dataSocket.close();
-            System.out.println("Data Socket closed");
+            // System.out.println("Data Socket closed");
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -71,8 +70,7 @@ final class FTPRequest implements Runnable {
 
             Path file = Paths.get(ftpRootDir + "/" + filename);
             try (InputStream in = Files.newInputStream(file);
-                BufferedReader reader =
-                new BufferedReader(new InputStreamReader(in))) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
                 String line = null;
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
@@ -107,12 +105,12 @@ final class FTPRequest implements Runnable {
 
         String frstln;
 
-        while (true) {
+        while (this.controlSocket.isConnected()) {
             System.out.println("Waiting for requests...");
             clientsCommand = inFromClient.readLine();
 
             if (clientCommand == null) {
-                // Client probably disconnected...
+                break;
             } else {
                 System.out.println("Command from client: " + clientsCommand);
 
@@ -132,13 +130,14 @@ final class FTPRequest implements Runnable {
                     stor(port);
                 } else if (clientCommand.equals("QUIT")) {
                     System.out.println("Terminating connection with client");
-                    controlSocket.close();
-                } else if (clientCommand.equals("INIT")) {
-
+                    break;
                 } else {
 
                 }
             }
+
         }
+        this.controlSocket.close();
+        return;
     }
 }

@@ -64,9 +64,9 @@ class FTPClient {
 
             controlSocket = new Socket(serverName, controlPort);
             // try {
-            //     controlSocket = new Socket(serverName, controlPort);
+            // controlSocket = new Socket(serverName, controlPort);
             // } catch (Exception e) {
-            //     System.out.println(e);
+            // System.out.println(e);
             // }
 
             System.out.println("You are connected to " + serverName + ":" + controlPort);
@@ -83,13 +83,12 @@ class FTPClient {
                     dataPort = dataPort + 2;
                     System.out.println("writing command to server: " + dataPort + " " + sentence);
 
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
-
                     ServerSocket server = new ServerSocket(dataPort);
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
                     Socket dataSocket = server.accept();
 
                     try (DataInputStream inData = new DataInputStream(
-                                new BufferedInputStream(dataSocket.getInputStream()))) {
+                            new BufferedInputStream(dataSocket.getInputStream()))) {
 
                         modifiedSentence = getUTF8String(inData);
                         System.out.println(modifiedSentence);
@@ -101,7 +100,7 @@ class FTPClient {
 
                     dataSocket.close();
                     server.close();
-                    System.out.println("datasocket is closed");
+                    // System.out.println("datasocket is closed");
                     System.out.println("\nWhat would you like to do next:\n retr: file.txt ||stor: file.txt  || close");
 
                 } else if (sentence.startsWith("RETR ")) {
@@ -133,6 +132,7 @@ class FTPClient {
                     System.out.println("Client is disconnecting");
                     controlSocket.close();
                 } else {
+                    outToServer.writeBytes("");
                     System.out.println("\nCommand not recognized\n");
                 }
             }
