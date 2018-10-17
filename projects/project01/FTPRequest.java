@@ -82,28 +82,11 @@ final class FTPRequest implements Runnable {
                     fout.write(s);
                     fout.newLine();
                 }
-
-                // Remember to call close.
-                // calling close on a BufferedReader/BufferedWriter
-                // will automatically call close on its underlying stream
                 fin.close();
                 fout.close();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // // FTPClient.readFileToDataOutputStream(file, dataOutToClient);
-            // try (InputStream in = Files.newInputStream(file);
-            // BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            // String line = null;
-            // while ((line = reader.readLine()) != null) {
-            // dataOutToClient.writeBytes(line);
-            // // dataOutToClient.writeUTF(line);
-            // System.out.println(line);
-            // }
-            // } catch (IOException x) {
-            // System.err.println(x);
-            // }
 
             dataSocket.close();
             System.out.println("Data Socket closed");
