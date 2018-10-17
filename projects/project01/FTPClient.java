@@ -78,11 +78,6 @@ class FTPClient {
             System.out.println("On dataPort:  " + controlPort);
 
             controlSocket = new Socket(serverName, controlPort);
-            // try {
-            // controlSocket = new Socket(serverName, controlPort);
-            // } catch (Exception e) {
-            // System.out.println(e);
-            // }
 
             System.out.println("You are connected to " + serverName + ":" + controlPort);
 
@@ -155,14 +150,42 @@ class FTPClient {
                     System.out.println("datasocket is closed");
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
-                    Socket dataSocket = server.accept();
-                    DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
+                    StringTokenizer commandTokens = new StringTokenizer(sentence);
+                    String clientCommand = commandTokens.nextToken();
+                    String fileName = commandTokens.nextToken();
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
-                    // ......................
-                    dataSocket.close();
+                    Socket dataSocket = server.accept();
+
+                    try {
+                        DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+
+                        Path file = Paths.get(ftpRootDir + "/" + fileName);
+
+                        try {
+                            Reader reader = new InputStreamReader(new FileInputStream(file.toString()));
+                            BufferedReader fin = new BufferedReader(reader);
+                            Writer writer = new OutputStreamWriter(dataOutToClient, "UTF-8");
+                            BufferedWriter fout = new BufferedWriter(writer);
+                            String s;
+                            while ((s = fin.readLine()) != null) {
+                                System.out.println(s);
+                                fout.write(s);
+                                fout.newLine();
+                            }
+                            fin.close();
+                            fout.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        dataSocket.close();
+                        System.out.println("Data Socket closed");
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 } else if (sentence.equals("QUIT")) {
                     isOpen = false;
                     clientgo = false;

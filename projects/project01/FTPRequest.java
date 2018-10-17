@@ -49,15 +49,29 @@ final class FTPRequest implements Runnable {
     }
 
     // Store a file on the server
-    void stor(int port) {
+    void stor(int port, String filename) {
+
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
-            DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-            // ......................
+            DataInputStream dataOutToClient = new DataInputStream(dataSocket.getInputStream());
+            Reader reader = new InputStreamReader(dataSocket.getInputStream());
+            BufferedReader fin = new BufferedReader(reader);
+            Writer writer = new OutputStreamWriter(
+                    new FileOutputStream(new File(ftpRootDir.toString() + "/" + filename)), "UTF-8");
+            BufferedWriter fout = new BufferedWriter(writer);
+            String s;
+            while ((s = fin.readLine()) != null) {
+                // System.out.println(s);
+                fout.write(s);
+                fout.newLine();
+            }
+
+            fin.close();
+            fout.close();
             dataSocket.close();
-            System.out.println("Data Socket closed");
-        } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("datasocket is closed");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -135,7 +149,7 @@ final class FTPRequest implements Runnable {
                 } else if (clientCommand.equals("RETR")) {
                     retr(port, commandTarget);
                 } else if (clientCommand.equals("STOR")) {
-                    stor(port);
+                    stor(port, commandTarget);
                 } else if (clientCommand.equals("QUIT")) {
                     System.out.println("Terminating connection with client");
                     break;
