@@ -32,8 +32,8 @@ final class FTPRequest implements Runnable {
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
             // ......................
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(ftpRootDir)) {
-                for (Path file: stream) {
-                    dataOutToClient.writeBytes(file.getFileName().toString() + CRLF);
+                for (Path file : stream) {
+                    dataOutToClient.writeUTF(file.getFileName().toString() + CRLF);
                     System.out.println(file.getFileName().toString());
                 }
             } catch (IOException | DirectoryIteratorException x) {
@@ -71,19 +71,39 @@ final class FTPRequest implements Runnable {
 
             Path file = Paths.get(ftpRootDir + "/" + filename);
 
-            // FTPClient.readFileToDataOutputStream(file, dataOutToClient);
-            try (InputStream in = Files.newInputStream(file);
-                BufferedReader reader =
-                new BufferedReader(new InputStreamReader(in))) {
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    dataOutToClient.writeBytes(line);
-                    // dataOutToClient.writeUTF(line);
-                    System.out.println(line);
+            try {
+                Reader reader = new InputStreamReader(new FileInputStream(file.toString()));
+                BufferedReader fin = new BufferedReader(reader);
+                Writer writer = new OutputStreamWriter(dataOutToClient, "UTF-8");
+                BufferedWriter fout = new BufferedWriter(writer);
+                String s;
+                while ((s = fin.readLine()) != null) {
+                    System.out.println(s);
+                    fout.write(s);
+                    fout.newLine();
                 }
-            } catch (IOException x) {
-                System.err.println(x);
+
+                // Remember to call close.
+                // calling close on a BufferedReader/BufferedWriter
+                // will automatically call close on its underlying stream
+                fin.close();
+                fout.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            // // FTPClient.readFileToDataOutputStream(file, dataOutToClient);
+            // try (InputStream in = Files.newInputStream(file);
+            // BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            // String line = null;
+            // while ((line = reader.readLine()) != null) {
+            // dataOutToClient.writeBytes(line);
+            // // dataOutToClient.writeUTF(line);
+            // System.out.println(line);
+            // }
+            // } catch (IOException x) {
+            // System.err.println(x);
+            // }
 
             dataSocket.close();
             System.out.println("Data Socket closed");

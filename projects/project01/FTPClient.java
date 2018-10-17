@@ -1,13 +1,14 @@
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
+import java.nio.charset.*;
 import static java.nio.file.StandardOpenOption.*;
 // import java.nio.file.Path;
 import java.net.*;
 import java.util.*;
 
-import java.text.
-    *;import java.lang.*;
+import java.text.*;
+import java.lang.*;
 import javax.swing.*;
 
 class FTPClient {
@@ -35,16 +36,15 @@ class FTPClient {
 
     public static void readFileToDataOutputStream(Path filename, DataOutputStream dataOutputStream) {
         try (InputStream in = Files.newInputStream(filename);
-                BufferedReader reader =
-                new BufferedReader(new InputStreamReader(in))) {
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    dataOutputStream.writeBytes(line);
-                    System.out.println(line);
-                }
-            } catch (IOException x) {
-                System.err.println(x);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                dataOutputStream.writeBytes(line);
+                System.out.println(line);
             }
+        } catch (IOException x) {
+            System.err.println(x);
+        }
     }
 
     public static void main(String argv[]) throws Exception {
@@ -79,9 +79,9 @@ class FTPClient {
 
             controlSocket = new Socket(serverName, controlPort);
             // try {
-            //     controlSocket = new Socket(serverName, controlPort);
+            // controlSocket = new Socket(serverName, controlPort);
             // } catch (Exception e) {
-            //     System.out.println(e);
+            // System.out.println(e);
             // }
 
             System.out.println("You are connected to " + serverName + ":" + controlPort);
@@ -96,14 +96,14 @@ class FTPClient {
 
                 if (sentence.equals("LIST")) {
                     dataPort = dataPort + 2;
-                    System.out.println("writing command to server: " + dataPort + " " + sentence);
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     ServerSocket server = new ServerSocket(dataPort);
+                    System.out.println("writing command to server: " + dataPort + " " + sentence);
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
                     Socket dataSocket = server.accept();
 
                     try (DataInputStream inData = new DataInputStream(
-                                new BufferedInputStream(dataSocket.getInputStream()))) {
+                            new BufferedInputStream(dataSocket.getInputStream()))) {
 
                         modifiedSentence = getUTF8String(inData);
                         System.out.println(modifiedSentence);
@@ -121,50 +121,33 @@ class FTPClient {
                 } else if (sentence.startsWith("RETR ")) {
                     dataPort = dataPort + 2;
 
-                    System.out.println("writing command to server:\n" + dataPort + " " + sentence);
-                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
-
                     StringTokenizer commandTokens = new StringTokenizer(sentence);
                     String clientCommand = commandTokens.nextToken();
-                    String commandTarget = "";
-                    if (commandTokens.hasMoreTokens()) {
-                        commandTarget = FTPClient.getTokensToString(commandTokens);
-                    }
+                    String fileName = commandTokens.nextToken();
 
                     ServerSocket server = new ServerSocket(dataPort);
+                    System.out.println("writing command to server:\n" + dataPort + " " + sentence);
+                    outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
                     Socket dataSocket = server.accept();
 
-                    try (DataInputStream inData = new DataInputStream(
-                                new BufferedInputStream(dataSocket.getInputStream()))) {
-
-
-                        // StringBuffer sb = new StringBuffer();
-                        // try {
-                        //     while (inData.available() > 0) {
-                        //         sb.append(inData.readUTF());
-                        //     }
-                        // } catch (Exception e) {
-                        //     System.err.println(e);
-                        // }
-                        modifiedSentence = getUTF8String(inData);
-                        // System.out.println(modifiedSentence);
-
-                        // Convert the string to a byte array.
-                        // byte data[] = sb.toString().getBytes();
-                        byte data[] = modifiedSentence.getBytes();
-                        Path p = Paths.get(ftpRootDir + "/" + commandTarget);
-
-                        try (OutputStream out = new BufferedOutputStream(
-                            Files.newOutputStream(p, CREATE, TRUNCATE_EXISTING))) {
-                            out.write(data, 0, data.length);
-                            System.out.println("File: '" + commandTarget + "' written.");
-                        } catch (IOException x) {
-                            System.err.println(x);
+                    try {
+                        Reader reader = new InputStreamReader(dataSocket.getInputStream());
+                        BufferedReader fin = new BufferedReader(reader);
+                        Writer writer = new OutputStreamWriter(
+                                new FileOutputStream(new File(ftpRootDir.toString() + "/" + fileName)), "UTF-8");
+                        BufferedWriter fout = new BufferedWriter(writer);
+                        String s;
+                        while ((s = fin.readLine()) != null) {
+                            // System.out.println(s);
+                            fout.write(s);
+                            fout.newLine();
                         }
 
+                        fin.close();
+                        fout.close();
+
                     } catch (IOException e) {
-                        // Output unexpected IOExceptions.
-                        System.out.println(e);
+                        e.printStackTrace();
                     }
 
                     dataSocket.close();
@@ -190,7 +173,9 @@ class FTPClient {
                     System.out.println("\nCommand not recognized\n");
                 }
             }
-        } else {
+        } else
+
+        {
             System.out.println("\nCommand not recognized:\nPlease CONNECT to a server first.");
         }
     }
