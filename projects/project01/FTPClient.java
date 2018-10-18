@@ -118,7 +118,7 @@ class FTPClient {
 
                     StringTokenizer commandTokens = new StringTokenizer(sentence);
                     String clientCommand = commandTokens.nextToken();
-                    String fileName = commandTokens.nextToken();
+                    String fileName = getTokensToString(commandTokens);
 
                     ServerSocket server = new ServerSocket(dataPort);
                     System.out.println("writing command to server:\n" + dataPort + " " + sentence);
@@ -158,7 +158,7 @@ class FTPClient {
                     ServerSocket server = new ServerSocket(dataPort);
                     StringTokenizer commandTokens = new StringTokenizer(sentence);
                     String clientCommand = commandTokens.nextToken();
-                    String fileName = commandTokens.nextToken();
+                    String fileName = getTokensToString(commandTokens);
                     outToServer.writeBytes(dataPort + " " + sentence + " " + CRLF);
 
                     Socket dataSocket = server.accept();
