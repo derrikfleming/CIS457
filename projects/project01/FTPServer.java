@@ -3,8 +3,12 @@ import java.net.*;
 import java.util.*;
 
 public class FTPServer {
+    /**
+     * FTPServer main()
+     * @param  argv[]    CLI arguments.
+     * @throws Exception If an error occurs.
+     */
     public static void main(String argv[]) throws Exception {
-
         // control port
         int port = 9381;
         // Establish the listen socket.

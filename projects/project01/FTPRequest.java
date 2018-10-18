@@ -12,7 +12,12 @@ final class FTPRequest implements Runnable {
     // The root directory for the ftp server.
     Path ftpRootDir = Paths.get("./ftp_server_root_dir");
 
-    // Constructor
+    /**
+     * FTPRequest Constructor
+     * @param  socket    TCP socket to send/recieve control commands over.
+     * @return           New FTPRequest Object
+     * @throws Exception If an error occurs.
+     */
     public FTPRequest(Socket socket) throws Exception {
         try {
             controlSocket = socket;
@@ -23,7 +28,10 @@ final class FTPRequest implements Runnable {
         }
     }
 
-    // List all files on the server
+    /**
+     * List all files on the server
+     * @param port Port number to connect to client on.
+     */
     void list(int port) {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
@@ -47,7 +55,11 @@ final class FTPRequest implements Runnable {
         }
     }
 
-    // Store a file on the server
+    /**
+     * Store a file on the server
+     * @param port     Port number to connect to client on.
+     * @param filename Name of file to store.
+     */
     void stor(int port, String filename) {
 
         try {
@@ -79,12 +91,15 @@ final class FTPRequest implements Runnable {
         }
     }
 
-    // Retrieve a file from the server
+    /**
+     * Retrieve a file from the server
+     * @param port     Port number to connect to client on.
+     * @param filename Name of file to retrieve.
+     */
     void retr(int port, String filename) {
         try {
             Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
             DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-            // ......................
 
             Path file = Paths.get(ftpRootDir + "/" + filename);
 
@@ -116,7 +131,9 @@ final class FTPRequest implements Runnable {
         }
     }
 
-    // Implement the run() method of the Runnable interface.
+    /**
+     * Implement the run() method of the Runnable interface.
+     */
     public void run() {
         try {
             System.out.println("A server thread has started. \nGetting ready to process req's");
@@ -126,6 +143,10 @@ final class FTPRequest implements Runnable {
         }
     }
 
+    /**
+     * Process client requests.
+     * @throws Exception If an error occurs.
+     */
     private void processRequest() throws Exception {
         String clientsCommand = "";
         String clientCommand = "";

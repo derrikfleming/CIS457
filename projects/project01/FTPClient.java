@@ -12,6 +12,12 @@ import java.lang.*;
 class FTPClient {
     final static String CRLF = "\r\n";
 
+    /**
+     * Stringifies an InputStream with UTF-8 encoding
+     * @param  in          InputStream to Stringify.
+     * @return             A String.
+     * @throws IOException If an I/O error occurs.
+     */
     public static String getUTF8String(InputStream in) throws IOException {
         Reader r = new InputStreamReader(in, "UTF-8");
         r = new BufferedReader(r, 1024);
@@ -23,6 +29,11 @@ class FTPClient {
         return sb.toString();
     }
 
+    /**
+     * Gets a String consisting of all remaining tokens appended sequentially.
+     * @param  tokens StringTokenizer containing tokens.
+     * @return        Single String consisting of all remaining tokens appended sequentially.
+     */
     public static String getTokensToString(StringTokenizer tokens) {
         StringBuilder sb = new StringBuilder();
         sb.append(tokens.nextToken());
@@ -32,6 +43,11 @@ class FTPClient {
         return sb.toString();
     }
 
+    /**
+     * FTPClient main()
+     * @param  argv[]    CLI arguments.
+     * @throws Exception If an error occurs.
+     */
     public static void main(String argv[]) throws Exception {
         String sentence;
         String modifiedSentence;
