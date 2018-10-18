@@ -132,10 +132,14 @@ class FTPClient {
                                 new FileOutputStream(new File(ftpRootDir.toString() + "/" + fileName)), "UTF-8");
                         BufferedWriter fout = new BufferedWriter(writer);
                         String s;
+                        boolean firstline = true;
                         while ((s = fin.readLine()) != null) {
                             // System.out.println(s);
+                            if (firstline == false)
+                                fout.newLine();
+                            else
+                                firstline = false;
                             fout.write(s);
-                            fout.newLine();
                         }
 
                         fin.close();
@@ -170,10 +174,13 @@ class FTPClient {
                             Writer writer = new OutputStreamWriter(dataOutToClient, "UTF-8");
                             BufferedWriter fout = new BufferedWriter(writer);
                             String s;
+                            boolean firstline = true;
                             while ((s = fin.readLine()) != null) {
-                                System.out.println(s);
+                                if (firstline == false)
+                                    fout.newLine();
+                                else
+                                    firstline = false;
                                 fout.write(s);
-                                fout.newLine();
                             }
                             fin.close();
                             fout.close();

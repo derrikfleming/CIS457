@@ -33,7 +33,7 @@ final class FTPRequest implements Runnable {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(ftpRootDir)) {
                 for (Path file : stream) {
                     dataOutToClient.writeUTF(file.getFileName().toString() + CRLF);
-                    System.out.println(file.getFileName().toString());
+                    // System.out.println(file.getFileName().toString());
                 }
             } catch (IOException | DirectoryIteratorException x) {
                 // IOException can never be thrown by the iteration.
@@ -60,10 +60,15 @@ final class FTPRequest implements Runnable {
                     new FileOutputStream(new File(ftpRootDir.toString() + "/" + filename)), "UTF-8");
             BufferedWriter fout = new BufferedWriter(writer);
             String s;
+            boolean firstline = true;
             while ((s = fin.readLine()) != null) {
                 // System.out.println(s);
+                if (firstline == false)
+                    fout.newLine();
+                else
+                    firstline = false;
                 fout.write(s);
-                fout.newLine();
+
             }
 
             fin.close();
@@ -90,10 +95,14 @@ final class FTPRequest implements Runnable {
                 Writer writer = new OutputStreamWriter(dataOutToClient, "UTF-8");
                 BufferedWriter fout = new BufferedWriter(writer);
                 String s;
+                boolean firstline = true;
                 while ((s = fin.readLine()) != null) {
-                    System.out.println(s);
+                    // System.out.println(s);
+                    if (firstline == false)
+                        fout.newLine();
+                    else
+                        firstline = false;
                     fout.write(s);
-                    fout.newLine();
                 }
                 fin.close();
                 fout.close();
