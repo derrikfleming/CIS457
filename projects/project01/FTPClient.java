@@ -34,19 +34,6 @@ class FTPClient {
         return sb.toString();
     }
 
-    public static void readFileToDataOutputStream(Path filename, DataOutputStream dataOutputStream) {
-        try (InputStream in = Files.newInputStream(filename);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                dataOutputStream.writeBytes(line);
-                System.out.println(line);
-            }
-        } catch (IOException x) {
-            System.err.println(x);
-        }
-    }
-
     public static void main(String argv[]) throws Exception {
         String sentence;
         String modifiedSentence;
