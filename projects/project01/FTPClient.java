@@ -79,15 +79,11 @@ class FTPClient {
             System.out.println("On dataPort:  " + controlPort);
 
             controlSocket = new Socket(serverName, controlPort);
-
             System.out.println("You are connected to " + serverName + ":" + controlPort);
 
             while (isOpen && clientgo) {
-
                 outToServer = new DataOutputStream(controlSocket.getOutputStream());
-
                 inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
-
                 sentence = inFromUser.readLine();
 
                 if (sentence.equals("LIST")) {
@@ -142,10 +138,8 @@ class FTPClient {
                                 firstline = false;
                             fout.write(s);
                         }
-
                         fin.close();
                         fout.close();
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -155,7 +149,6 @@ class FTPClient {
                     System.out.println("datasocket is closed");
                 } else if (sentence.startsWith("STOR ")) {
                     dataPort = dataPort + 2;
-
                     ServerSocket server = new ServerSocket(dataPort);
                     StringTokenizer commandTokens = new StringTokenizer(sentence);
                     String clientCommand = commandTokens.nextToken();
@@ -205,9 +198,7 @@ class FTPClient {
                     System.out.println("\nCommand not recognized\n");
                 }
             }
-        } else
-
-        {
+        } else {
             System.out.println("\nCommand not recognized:\nPlease CONNECT to a server first.");
         }
     }
