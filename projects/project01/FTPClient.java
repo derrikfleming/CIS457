@@ -3,13 +3,11 @@ import java.nio.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import static java.nio.file.StandardOpenOption.*;
-// import java.nio.file.Path;
 import java.net.*;
 import java.util.*;
 
 import java.text.*;
 import java.lang.*;
-import javax.swing.*;
 
 class FTPClient {
     final static String CRLF = "\r\n";
