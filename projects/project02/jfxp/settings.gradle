@@ -7,4 +7,20 @@
  * in the user guide at https://docs.gradle.org/4.10.2/userguide/multi_project_builds.html
  */
 
+//pluginManagement {
+//    repositories {
+////        maven {
+////            url 'maven-repo'
+////        }
+////        gradlePluginPortal()
+////        ivy {
+////            url 'ivy-repo'
+////        }
+//        jcenter()
+//        mavenLocal()
+//        mavenCentral()
+//    }
+//}
+
 rootProject.name = 'jfxp'
+

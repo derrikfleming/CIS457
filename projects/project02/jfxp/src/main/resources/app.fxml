@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="650.0" style="-fx-background-color: #282a36;" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <SplitPane dividerPositions="0.1975, 0.6034" orientation="VERTICAL" prefHeight="581.0" prefWidth="635.0" style="-fx-background-color: #282a36;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #282a36;">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="Server Hostname:" textFill="WHITE" AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="26.0">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                   <Label layoutX="14.0" layoutY="30.0" text="Username:" textFill="WHITE" AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="70.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <TextField layoutX="54.0" layoutY="10.0" prefHeight="26.0" prefWidth="144.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="21.0" />
+                  <TextField layoutX="54.0" layoutY="26.0" prefWidth="102.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="84.0" AnchorPane.topAnchor="66.0" />
+                   <Label layoutX="345.0" layoutY="22.0" text="Port:" textFill="WHITE" AnchorPane.leftAnchor="281.0" AnchorPane.topAnchor="26.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <TextField layoutX="395.0" layoutY="18.0" prefHeight="26.0" prefWidth="144.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="310.0" AnchorPane.topAnchor="21.0" />
+                  <Button layoutX="517.0" layoutY="18.0" mnemonicParsing="false" prefWidth="144.0" style="-fx-background-color: #ffb86c;" text="Connect" AnchorPane.leftAnchor="475.0" AnchorPane.topAnchor="21.0" />
+                   <Label layoutX="292.0" layoutY="72.0" text="Hostname:" textFill="WHITE" AnchorPane.leftAnchor="199.0" AnchorPane.topAnchor="70.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <TextField layoutX="332.0" layoutY="68.0" prefWidth="144.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="262.0" AnchorPane.topAnchor="66.0" />
+                   <Label layoutX="449.0" layoutY="71.0" text="Speed:" textFill="WHITE" AnchorPane.leftAnchor="419.0" AnchorPane.topAnchor="70.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <ComboBox layoutX="485.0" layoutY="66.0" prefWidth="150.0" style="-fx-background-color: #ffb86c;" AnchorPane.leftAnchor="460.0" AnchorPane.topAnchor="66.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #282a36;">
+               <children>
+                   <Label layoutX="14.0" layoutY="28.0" text="Keyword:" textFill="WHITE" AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="26.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <TextField layoutX="103.0" layoutY="21.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="21.0" />
+                  <TableView layoutX="21.0" layoutY="56.0" prefHeight="165.0" prefWidth="616.0" style="-fx-background-color: #f8f8f2;" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="21.0">
+                    <columns>
+                      <TableColumn prefWidth="121.0" text="Speed" />
+                      <TableColumn prefWidth="322.0" text="Hostname" />
+                        <TableColumn prefWidth="172.0" text="Filename" />
+                    </columns>
+                  </TableView>
+                  <Button layoutX="282.0" layoutY="21.0" mnemonicParsing="false" prefWidth="144.0" style="-fx-background-color: #ffb86c;" text="Search" AnchorPane.leftAnchor="259.0" AnchorPane.topAnchor="21.0" />
+               </children></AnchorPane>
+            <AnchorPane prefHeight="472.0" prefWidth="617.0" style="-fx-background-color: #282a36;">
+               <children>
+                   <Label layoutX="22.0" layoutY="24.0" text="Enter Command:" textFill="WHITE" AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="26.0">
+                       <font>
+                           <Font size="11.0" />
+                       </font>
+                   </Label>
+                  <TextField layoutX="79.0" layoutY="19.0" prefWidth="233.0" style="-fx-background-color: #44475a; -fx-text-fill: white;" AnchorPane.leftAnchor="118.0" AnchorPane.topAnchor="21.0" />
+                  <Button layoutX="262.0" layoutY="20.0" mnemonicParsing="false" prefWidth="144.0" style="-fx-background-color: #ffb86c;" text="Go" AnchorPane.leftAnchor="364.0" AnchorPane.topAnchor="21.0" />
+                  <TextArea layoutX="40.0" layoutY="-20.0" prefHeight="165.0" prefWidth="200.0" style="-fx-background-color: #f8f8f2;" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="21.0" />
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
