@@ -23,6 +23,9 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+    
+    //sqlite-jdbc
+    compile group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2'
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -31,5 +34,5 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
     // mavenLocal()
-    // mavenCentral()
+    mavenCentral()
 }
