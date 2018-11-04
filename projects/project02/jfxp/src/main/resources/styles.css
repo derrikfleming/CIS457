@@ -25,7 +25,9 @@
     -fx-background-color: #f8f8f2;
 }
 
-
+.table-view .label {
+    -fx-text-fill: black;
+}
 
 .text-area {
     -fx-background-color: #f8f8f2;
