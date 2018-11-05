@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testCompile 'junit:junit:4.12'
+
+    //sqlite-jdbc
+    compile group:'org.xerial', name:'sqlite-jdbc', version:'3.8.11.2'
+}
