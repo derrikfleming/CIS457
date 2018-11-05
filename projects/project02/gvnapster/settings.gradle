@@ -8,6 +8,5 @@
  */
 
 rootProject.name = 'gvnapster'
-include 'client'
-include 'server'
+include 'client', 'server'
 
