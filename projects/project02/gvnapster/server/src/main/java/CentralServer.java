@@ -7,6 +7,11 @@ public class CentralServer {
      * @throws Exception If an error occurs.
      */
     public static void main(String argv[]) throws Exception {
+
+        // for verifying build working
+        System.out.println("HEY! The CentralServer is running");
+
+
         // control port
         int port = 9381;
         // Establish the listen socket.
