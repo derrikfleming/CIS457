@@ -3,16 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/client/src/main/client.iml" filepath="$PROJECT_DIR$/client/src/main/client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/client_main.iml" group="client" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/client/client_test.iml" group="client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gvnapster.iml" filepath="$PROJECT_DIR$/.idea/modules/gvnapster.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/gvnapster-client.iml" filepath="$PROJECT_DIR$/.idea/modules/client/gvnapster-client.iml" group="client" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/gvnapster-server.iml" filepath="$PROJECT_DIR$/.idea/modules/server/gvnapster-server.iml" group="server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gvnapster_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gvnapster_main.iml" group="gvnapster" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gvnapster_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gvnapster_test.iml" group="gvnapster" />
       <module fileurl="file://$PROJECT_DIR$/server/src/main/server.iml" filepath="$PROJECT_DIR$/server/src/main/server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/server/server_main.iml" group="server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/server/server_test.iml" group="server" />
     </modules>
   </component>
 </project>
