@@ -43,13 +43,15 @@ final class CentralServerRequest implements Runnable {
             ArrayList<String> userData = recvUserData();
             ArrayList<String> fileList = recvFileList();
 
-            db.writeNewClient(userData, fileList);
+            db.newClient(userData, fileList);
         }
     }
 
     private ArrayList<String> recvUserData() {
         ArrayList<String> userData = new ArrayList<>();
 
+        // userData list order:
+        //    [username, address, port, connType]
         try {
             for (int i = 0; i < 5; i++) {
                 userData.add(in.readLine());
@@ -77,7 +79,7 @@ final class CentralServerRequest implements Runnable {
     }
 
     private void search(){
-
+        //TODO
     }
 
 }
