@@ -78,8 +78,10 @@ final class CentralServerRequest implements Runnable {
         return fileList;
     }
 
-    private void search(){
+    private ArrayList<String[]> search(String searchTerm){
         //TODO
-    }
+        ArrayList<String[]> results = db.searchFileList(searchTerm);
 
+        return results;
+    }
 }

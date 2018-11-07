@@ -84,7 +84,7 @@ public class Database {
         return userID;
     }
 
-    public ArrayList<String[]> searchForFile(String searchTerm) {
+    public ArrayList<String[]> searchFileList(String searchTerm) {
         ArrayList<String[]> results = new ArrayList<String[]>();
 
         try {
