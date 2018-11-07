@@ -118,9 +118,9 @@ public class Database {
             // get the sharing user's info from tblUsers using the userID
             // the current record in tblFileList
             PreparedStatement ps =
-                    conn.prepareStatement( "SELECT id, connType, address, port" +
-                            "FROM tblUsers " +
-                            "WHERE id = ?;");
+                    conn.prepareStatement( "SELECT id, connType, address, port " +
+                                                "FROM tblUsers " +
+                                                "WHERE id = ?;");
             ps.setString(1, userID);
             ResultSet rs = ps.executeQuery();
 
