@@ -89,40 +89,52 @@ public class Database {
 
         try {
             //getting relevant file listings
-            PreparedStatement ps1 =
+            PreparedStatement ps =
                     conn.prepareStatement( "SELECT * " +
                                                 "FROM tblFileList " +
                                                 "WHERE fileName LIKE ?;");
-            ps1.setString(1, "%" + searchTerm + '%');
-            ResultSet rs1 = ps1.executeQuery();
+            ps.setString(1, "%" + searchTerm + '%');
 
-            //getting userdata regarding files
-            while(rs1.next()){
-                String[] record = new String[4];
-                String userID = rs1.getString(2);
+            // records of relevant files
+            ResultSet rs1 = ps.executeQuery();
 
-                // get the sharing user's info from tblUsers using the userID
-                // the current record in tblFileList
-                PreparedStatement ps2 =
-                        conn.prepareStatement( "SELECT id, connType, address, port" +
-                                                    "FROM tblUsers " +
-                                                    "WHERE id = ?;");
-                ps2.setString(1, userID);
-                ResultSet rs2 = ps2.executeQuery();
-
-                // add connType, then address, then port to record[]
-                for(int i = 0, j = 1; i < 3; i++, j++){
-                    record[i] = rs2.getString(j);
-                }
-
-                // add filename to record[]
-                record[3] = rs1.getString("filename");
-
-                results.add(record);
-            }
+            results = getUserData(rs1);
         } catch (SQLException e) {
             System.out.println(e);
         }
+
+        return results;
+    }
+
+    private ArrayList<String[]> getUserData(ResultSet fileSet) throws SQLException {
+        ArrayList<String[]> results = new ArrayList<String[]>();
+
+        //getting userdata regarding files
+        //iterating through the ResultSet of relevant files
+        while(fileSet.next()){
+            String[] record = new String[4];
+            String userID = fileSet.getString(2);
+
+            // get the sharing user's info from tblUsers using the userID
+            // the current record in tblFileList
+            PreparedStatement ps =
+                    conn.prepareStatement( "SELECT id, connType, address, port" +
+                            "FROM tblUsers " +
+                            "WHERE id = ?;");
+            ps.setString(1, userID);
+            ResultSet rs = ps.executeQuery();
+
+            // add connType, then address, then port to record[]
+            for(int i = 0, j = 1; i < 3; i++, j++){
+                record[i] = rs.getString(j);
+            }
+
+            // add filename to record[]
+            record[3] = fileSet.getString("filename");
+
+            results.add(record);
+        }
+
         return results;
     }
 }
