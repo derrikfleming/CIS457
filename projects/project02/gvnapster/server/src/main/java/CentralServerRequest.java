@@ -11,6 +11,10 @@ final class CentralServerRequest implements Runnable {
     private DataOutputStream out;
     private Database db = new Database();
 
+    //userData ArrayList format <username> -> <addr> -> <port> -> <conntype>
+    //filelist ArrayList format <filename> -> <filename> -> ...
+    private ArrayList<String> userData, fileList;
+
 
     public CentralServerRequest(Socket socket) throws Exception {
         try {
@@ -40,15 +44,14 @@ final class CentralServerRequest implements Runnable {
         if(this.socket.isConnected()){
             System.out.println("Client connected.");
 
-            ArrayList<String> userData = recvUserData();
-            ArrayList<String> fileList = recvFileList();
+            userData = recvUserData();
+            fileList = recvFileList();
 
             db.newClient(userData, fileList);
         }
     }
 
     private ArrayList<String> recvUserData() {
-        ArrayList<String> userData = new ArrayList<>();
 
         // userData list order:
         //    [username, address, port, connType]
@@ -64,8 +67,6 @@ final class CentralServerRequest implements Runnable {
     }
 
     private ArrayList<String> recvFileList() {
-        ArrayList<String> fileList = new ArrayList<>();
-
         try {
             String line;
             while ((line = in.readLine()) != null) {
@@ -78,10 +79,13 @@ final class CentralServerRequest implements Runnable {
         return fileList;
     }
 
-    private ArrayList<String[]> search(String searchTerm){
-        //TODO
+    private ArrayList<String[]> search(String searchTerm) {
         ArrayList<String[]> results = db.searchFileList(searchTerm);
 
         return results;
+    }
+
+    private void disconnectClient() {
+        db.clientDisconnect(userData);
     }
 }

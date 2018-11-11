@@ -84,6 +84,36 @@ public class Database {
         return userID;
     }
 
+    public void clientDisconnect (ArrayList<String> username) {
+        int userID = getUserID(username.get(1));
+
+        try {
+            deleteUserFiles(userID);
+            deleteUser(userID);
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+    }
+
+    private void deleteUser (int userID) throws SQLException {
+        PreparedStatement ps =
+                conn.prepareStatement( "DELETE * " +
+                                            "FROM tblUsers " +
+                                            "WHERE id = ?;");
+        ps.setInt(1, userID);
+        ps.executeUpdate();
+    }
+
+    private void deleteUserFiles (int userID) throws SQLException {
+        PreparedStatement ps =
+                conn.prepareStatement( "DELETE * " +
+                                            "FROM tblFileList " +
+                                            "WHERE userID = ?;");
+        ps.setInt(1, userID);
+        ps.executeUpdate();
+    }
+
     public ArrayList<String[]> searchFileList(String searchTerm) {
         ArrayList<String[]> results = new ArrayList<String[]>();
 
@@ -113,7 +143,7 @@ public class Database {
         //iterating through the ResultSet of relevant files
         while(fileSet.next()){
             String[] record = new String[4];
-            String userID = fileSet.getString(2);
+            int userID = fileSet.getInt(2);
 
             // get the sharing user's info from tblUsers using the userID
             // the current record in tblFileList
@@ -121,7 +151,7 @@ public class Database {
                     conn.prepareStatement( "SELECT id, connType, address, port " +
                                                 "FROM tblUsers " +
                                                 "WHERE id = ?;");
-            ps.setString(1, userID);
+            ps.setInt(1, userID);
             ResultSet rs = ps.executeQuery();
 
             // add connType, then address, then port to record[]
@@ -134,7 +164,8 @@ public class Database {
 
             results.add(record);
         }
-
         return results;
     }
+
+
 }
