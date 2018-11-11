@@ -4,6 +4,8 @@ import java.nio.file.*;
 import java.net.*;
 import java.util.*;
 
+// import FTPHelper;
+
 final class FTPRequest implements Runnable {
     final static String CRLF = "\r\n";
     Socket controlSocket;
@@ -61,29 +63,13 @@ final class FTPRequest implements Runnable {
      * @param filename Name of file to store.
      */
     void stor(int port, String filename) {
-        try {
-            Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
-            DataInputStream dataOutToClient = new DataInputStream(dataSocket.getInputStream());
-            Reader reader = new InputStreamReader(dataSocket.getInputStream());
-            BufferedReader fin = new BufferedReader(reader);
-
-            Path file = Paths.get(ftpRootDir + "/" + filename);
-            Writer writer = new OutputStreamWriter(
-                    new FileOutputStream(new File(file.toString())), "UTF-8");
-            BufferedWriter fout = new BufferedWriter(writer);
-            String s;
-            boolean firstline = true;
-            while ((s = fin.readLine()) != null) {
-                // System.out.println(s);
-                if (firstline == false)
-                    fout.newLine();
-                else
-                    firstline = false;
-                fout.write(s);
-
+        try (Socket dataSocket = new Socket(controlSocket.getInetAddress(), port)) {
+            try {
+                Path file = Paths.get(ftpRootDir + "/" + filename);
+                FTPHelper.recvFile(dataSocket, file);
+            } catch (Exception e) {
+                System.out.println(e);
             }
-            fin.close();
-            fout.close();
             dataSocket.close();
             System.out.println("datasocket is closed");
         } catch (IOException e) {
@@ -97,30 +83,12 @@ final class FTPRequest implements Runnable {
      * @param filename Name of file to retrieve.
      */
     void retr(int port, String filename) {
-        try {
-            Socket dataSocket = new Socket(controlSocket.getInetAddress(), port);
-            DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-            Path file = Paths.get(ftpRootDir + "/" + filename);
-
+        try (Socket dataSocket = new Socket(controlSocket.getInetAddress(), port)) {
             try {
-                Reader reader = new InputStreamReader(new FileInputStream(file.toString()));
-                BufferedReader fin = new BufferedReader(reader);
-                Writer writer = new OutputStreamWriter(dataOutToClient, "UTF-8");
-                BufferedWriter fout = new BufferedWriter(writer);
-                String s;
-                boolean firstline = true;
-                while ((s = fin.readLine()) != null) {
-                    // System.out.println(s);
-                    if (firstline == false)
-                        fout.newLine();
-                    else
-                        firstline = false;
-                    fout.write(s);
-                }
-                fin.close();
-                fout.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                Path file = Paths.get(ftpRootDir + "/" + filename);
+                FTPHelper.sendFile(dataSocket, file);
+            } catch (Exception e) {
+                System.out.println(e);
             }
             dataSocket.close();
             System.out.println("Data Socket closed");
@@ -167,7 +135,7 @@ final class FTPRequest implements Runnable {
                 port = Integer.parseInt(frstln);
                 clientCommand = tokens.nextToken();
                 if (tokens.hasMoreTokens()) {
-                    commandTarget = FTPClient.getTokensToString(tokens);
+                    commandTarget = FTPHelper.getTokensToString(tokens);
                 }
 
                 if (clientCommand.equals("LIST")) {
