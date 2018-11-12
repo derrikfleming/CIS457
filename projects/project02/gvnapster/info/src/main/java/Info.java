@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 public class Info implements Serializable {
     private String username, address, port, conType;
-    private ArrayList<String> fileList;
 
     public Info() {}
 
@@ -37,13 +36,5 @@ public class Info implements Serializable {
 
     public void setConType(String conType) {
         this.conType = conType;
-    }
-
-    public ArrayList<String> getFileList() {
-        return fileList;
-    }
-
-    public void setFileList(ArrayList<String> fileList) {
-        this.fileList = fileList;
     }
 }

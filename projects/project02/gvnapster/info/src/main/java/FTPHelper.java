@@ -56,7 +56,7 @@ public class FTPHelper {
         boolean firstline = true;
         while ((s = fin.readLine()) != null) {
             // System.out.println(s);
-            if (firstline == false)
+            if (!firstline)
                 fout.newLine();
             else
                 firstline = false;
@@ -71,9 +71,9 @@ public class FTPHelper {
      */
     public static void sendFile(Socket out, Path file) {
         try (
-                DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
                 Reader reader = new InputStreamReader(new FileInputStream(file.toString()));
                 BufferedReader fin = new BufferedReader(reader);
+                DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
                 Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
                 BufferedWriter fout = new BufferedWriter(writer);
         ) {
@@ -110,6 +110,42 @@ public class FTPHelper {
     }
 
     // public static Path getFilePath(String filename) {
+    //     // TODO
+    // }
+
+
+
+    /**
+     * List all files on the server
+     * @param out [description]
+     * @param dir [description]
+     */
+    public static void list(Socket out, Path dir, Info hostInfo) {
+        try (DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream())) {
+            ArrayList<FileInfo> files = new ArrayList<>();
+
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+//                stream.forEach(file -> {files.add(file)});
+
+                for (Path file : stream) {
+                    files.add(new FileInfo(hostInfo, file.getFileName().toString()));
+//                    dataOutToClient.writeUTF(file.getFileName().toString() + CRLF);
+                    // System.out.println(file.getFileName().toString());
+                }
+            } catch (IOException | DirectoryIteratorException x) {
+                // IOException can never be thrown by the iteration.
+                // In this snippet, it can only be thrown by newDirectoryStream.
+                System.err.println(x);
+            }
+            dataOutToClient.flush();
+//            out.close();
+            // System.out.println("Data Socket closed");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // public static void retr(Socket ) {
     //     // TODO
     // }
 
