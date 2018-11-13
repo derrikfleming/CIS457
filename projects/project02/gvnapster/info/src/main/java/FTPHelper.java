@@ -109,12 +109,6 @@ public class FTPHelper {
         }
     }
 
-    // public static Path getFilePath(String filename) {
-    //     // TODO
-    // }
-
-
-
     /**
      * List all files on the server
      * @param out Output socket
@@ -122,28 +116,31 @@ public class FTPHelper {
      * @param hostInfo Host Info for creating FileInfo
      */
     public static void list(Socket out, Path dir, Info hostInfo) {
-        try (DataOutputStream dataOutToClient = new DataOutputStream(out.getOutputStream())) {
-            ArrayList<FileInfo> files = new ArrayList<>();
+        ArrayList<FileInfo> files = new ArrayList<>();
 
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 //                stream.forEach(file -> {files.add(file)});
 
-                for (Path file : stream) {
-                    files.add(new FileInfo(hostInfo, file.getFileName().toString()));
+            for (Path file : stream) {
+                files.add(new FileInfo(hostInfo, file.getFileName().toString()));
 //                    dataOutToClient.writeUTF(file.getFileName().toString() + CRLF);
-                    // System.out.println(file.getFileName().toString());
-                }
-            } catch (IOException | DirectoryIteratorException x) {
-                // IOException can never be thrown by the iteration.
-                // In this snippet, it can only be thrown by newDirectoryStream.
-                System.err.println(x);
+                // System.out.println(file.getFileName().toString());
             }
-            dataOutToClient.flush();
-//            out.close();
-            // System.out.println("Data Socket closed");
-        } catch (Exception e) {
-            System.out.println(e);
+
+            // Write files list to output socket.
+            try {
+                FileInfo.sendFileInfoArrayList(out, files);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
+        } catch (IOException | DirectoryIteratorException x) {
+            // IOException can never be thrown by the iteration.
+            // In this snippet, it can only be thrown by newDirectoryStream.
+            System.err.println(x);
         }
+//            out.close();
+        // System.out.println("Data Socket closed");
     }
 
     // public static void retr(Socket ) {

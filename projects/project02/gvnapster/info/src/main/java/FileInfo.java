@@ -1,4 +1,9 @@
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class FileInfo implements Serializable {
@@ -48,5 +53,41 @@ public class FileInfo implements Serializable {
 
     public void setfilename(String filename) {
         this.filename = filename;
+    }
+    
+    /**
+     * Send an ArrayList of FileInfo objects to a socket.
+     * @param out Output socket
+     * @param fileInfoArrayList ArrayList of FileInfo objects to send
+     */
+    public static void sendFileInfoArrayList(Socket out, ArrayList<FileInfo> fileInfoArrayList) {
+        try (
+                DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
+                ObjectOutputStream objectOut = new ObjectOutputStream(dataOut);
+        ) {
+            objectOut.writeObject(fileInfoArrayList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Recieve an ArrayList of FileInfo objects from a socket.
+     * @param in Input socket
+     * @return ArrayList of FileInfo objects recieved
+     */
+    public static ArrayList<FileInfo> recvFileInfoArrayList(Socket in) {
+        ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
+        try (ObjectInputStream objectIn = new ObjectInputStream(in.getInputStream())) {
+            try {
+                Object object = objectIn.readObject();
+                fileInfoArrayList = (ArrayList<FileInfo>) object;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileInfoArrayList;
     }
 }
