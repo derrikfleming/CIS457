@@ -117,11 +117,12 @@ public class FTPHelper {
 
     /**
      * List all files on the server
-     * @param out [description]
-     * @param dir [description]
+     * @param out Output socket
+     * @param dir Directory to list files from
+     * @param hostInfo Host Info for creating FileInfo
      */
     public static void list(Socket out, Path dir, Info hostInfo) {
-        try (DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream())) {
+        try (DataOutputStream dataOutToClient = new DataOutputStream(out.getOutputStream())) {
             ArrayList<FileInfo> files = new ArrayList<>();
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
