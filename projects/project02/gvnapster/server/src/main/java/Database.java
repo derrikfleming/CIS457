@@ -24,15 +24,29 @@ public class Database {
         }
     }
 
-    public void newClient(ArrayList<FileInfo> clientFileInfos){
+    /**
+     * Add new client info and file list to the database.
+     * @param clientInfo Client info.
+     * @param clientFileInfos List of files from client.
+     */
+    public void newClient(Info clientInfo, ArrayList<FileInfo> clientFileInfos) {
         int userID;
-        Info clientInfo = clientFileInfos.get(0).getInfo();
         String username = clientInfo.getUsername();
         if(!userExists(username)){
             writeUserData(clientInfo);
             userID = getUserID(username);
             writeFileList(userID, clientFileInfos);
         }
+    }
+
+    /**
+     * Add new client info and file list to the database.
+     * Wrapper to newClient(Info clientInfo, ArrayList<FileInfo> clientFileInfos)
+     * @param clientFileInfos List of files from client, along with associated client info.
+     */
+    public void newClient(ArrayList<FileInfo> clientFileInfos) {
+        Info clientInfo = clientFileInfos.get(0).getInfo();
+        newClient(clientInfo, clientFileInfos);
     }
 
     private boolean userExists(String username) {
@@ -102,8 +116,8 @@ public class Database {
         return userID;
     }
 
-    public void clientDisconnect (ArrayList<FileInfo> clientFileInfos) {
-        int userID = getUserID(clientFileInfos.get(0).getInfo().getUsername());
+    public void clientDisconnect (Info clientInfo) {
+        int userID = getUserID(clientInfo.getUsername());
 
         try {
             deleteUser(userID);
@@ -122,6 +136,7 @@ public class Database {
         ps.executeUpdate();
     }
 
+    // TODO: Modify to return ArrayList<FileInfo>
     public ArrayList<String[]> searchFileList(String searchTerm) {
         ArrayList<String[]> results = new ArrayList<String[]>();
 

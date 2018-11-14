@@ -7,20 +7,21 @@ import java.util.ArrayList;
 
 final class CentralServerRequest implements Runnable {
     private Socket socket;
-    private BufferedReader in;
-    private DataOutputStream out;
+//    private BufferedReader in;
+//    private DataOutputStream out;
     private Database db = new Database();
 
     //userData ArrayList format <username> -> <addr> -> <port> -> <conntype>
     //filelist ArrayList format <filename> -> <filename> -> ...
-    private ArrayList<String> userData, fileList;
+    private Info userInfo;
+    private ArrayList<FileInfo> fileList;
 
 
     public CentralServerRequest(Socket socket) throws Exception {
         try {
             this.socket = socket;
-            out = new DataOutputStream(this.socket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+//            out = new DataOutputStream(this.socket.getOutputStream());
+//            in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
             // Test CentralServer thread
             System.out.println("CentralServer thread started!");
@@ -30,62 +31,42 @@ final class CentralServerRequest implements Runnable {
         }
     }
 
+    /**
+     * Implement the run() method of the Runnable interface.
+     */
     public void run() {
         try {
-            System.out.println("A server thread has started. \nGetting ready to process req's");
-            clientInitConnect();
+            System.out.println("A server thread has started.");
+            System.out.println("Getting ready to process req's");
+
+            // Initialize client connection
+            if(this.socket.isConnected()){
+                System.out.println("Client connected.");
+
+                // Receive client's file list.
+                fileList = FileInfo.recvFileInfoArrayList(socket);
+                userInfo = fileList.get(0).getInfo();
+
+                db.newClient(userInfo, fileList);
+            }
+
+            while (!socket.isClosed()) {
+
+            }
+
+            // Disconnect client and remove client info/filelist from database.
+            socket.close();
+            db.clientDisconnect(userInfo);
+
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    private void clientInitConnect() {
-
-        if(this.socket.isConnected()){
-            System.out.println("Client connected.");
-
-            userData = recvUserData();
-            fileList = recvFileList();
-
-            db.newClient(userData, fileList);
-        }
-    }
-
-    private ArrayList<String> recvUserData() {
-
-        // userData list order:
-        //    [username, address, port, connType]
-        try {
-            for (int i = 0; i < 5; i++) {
-                userData.add(in.readLine());
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
-        return userData;
-    }
-
-    private ArrayList<String> recvFileList() {
-        try {
-            String line;
-            while ((line = in.readLine()) != null) {
-                fileList.add(line);
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
-        return fileList;
-    }
-
+    // TODO: Modify to return ArrayList<FileInfo>
     private ArrayList<String[]> search(String searchTerm) {
         ArrayList<String[]> results = db.searchFileList(searchTerm);
 
         return results;
-    }
-
-    private void disconnectClient() {
-        db.clientDisconnect(userData);
     }
 }
