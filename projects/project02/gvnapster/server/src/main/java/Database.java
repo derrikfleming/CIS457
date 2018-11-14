@@ -24,43 +24,62 @@ public class Database {
         }
     }
 
-    public void newClient(ArrayList<String> userData, ArrayList<String> fileList){
+    public void newClient(ArrayList<FileInfo> clientFileInfos){
         int userID;
-
-        writeUserData(userData);
-        userID = getUserID(userData.get(0));
-        writeFileList(userID, fileList);
+        Info clientInfo = clientFileInfos.get(0).getInfo();
+        String username = clientInfo.getUsername();
+        if(!userExists(username)){
+            writeUserData(clientInfo);
+            userID = getUserID(username);
+            writeFileList(userID, clientFileInfos);
+        }
     }
 
-    private void writeUserData(ArrayList<String> userData){
+    private boolean userExists(String username) {
+        boolean exists = false;
+
         try {
             PreparedStatement ps =
-                    conn.prepareStatement("INSERT INTO tblUsers VALUES(?,?,?,?,?);");
+                    conn.prepareStatement( "SELECT * " +
+                                                "FROM tblUsers " +
+                                                "WHERE username = ?;");
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
 
-            for(int i = 0, j = 2; i < userData.size(); i++, j++) {
-                if(i == 0)
-                    ps.setInt(j, Integer.parseInt(userData.get(i)));
+            exists = rs.next();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
 
-                ps.setString(j, userData.get(i));
-            }
+        return exists;
+    }
 
+    private void writeUserData(Info clientInfo){
+        try {
+            PreparedStatement ps =
+                    conn.prepareStatement("INSERT INTO tblUsers " +
+                                                "VALUES(?,?,?,?,?);");
+            ps.setString(1, clientInfo.getUsername());
+            ps.setString(2, clientInfo.getAddress());
+            ps.setString(3, clientInfo.getConType());
             ps.execute();
         } catch (SQLException e) {
             System.out.println(e);
         }
     }
 
-    private void writeFileList(int userID, ArrayList<String> fileList) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO tblFileList VALUES(?,?,?);");
-
-            for (int i = 0; i < fileList.size(); i++) {
-                ps.setInt(2, userID);
-                ps.setString(3, fileList.get(i));
+    private void writeFileList(int userID, ArrayList<FileInfo> clientFileInfos) {
+        for (int i = 0; i < clientFileInfos.size(); i++) {
+            try {
+                PreparedStatement ps =
+                        conn.prepareStatement("INSERT INTO tblFileList " +
+                                                    "VALUES(?,?,?);");
+                ps.setInt(1, userID);
+                ps.setString(2, clientFileInfos.get(i).getFilename());
                 ps.execute();
+            } catch (SQLException e) {
+                System.out.println(e);
             }
-        } catch (SQLException e) {
-            System.out.println(e);
         }
     }
 
@@ -76,7 +95,6 @@ public class Database {
             ResultSet rs = ps.executeQuery();
 
             userID = rs.getInt("id");
-
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -84,11 +102,10 @@ public class Database {
         return userID;
     }
 
-    public void clientDisconnect (ArrayList<String> username) {
-        int userID = getUserID(username.get(1));
+    public void clientDisconnect (ArrayList<FileInfo> clientFileInfos) {
+        int userID = getUserID(clientFileInfos.get(0).getInfo().getUsername());
 
         try {
-            deleteUserFiles(userID);
             deleteUser(userID);
         } catch (SQLException e) {
             System.out.println(e);
@@ -98,18 +115,9 @@ public class Database {
 
     private void deleteUser (int userID) throws SQLException {
         PreparedStatement ps =
-                conn.prepareStatement( "DELETE * " +
+                conn.prepareStatement( "DELETE " +
                                             "FROM tblUsers " +
                                             "WHERE id = ?;");
-        ps.setInt(1, userID);
-        ps.executeUpdate();
-    }
-
-    private void deleteUserFiles (int userID) throws SQLException {
-        PreparedStatement ps =
-                conn.prepareStatement( "DELETE * " +
-                                            "FROM tblFileList " +
-                                            "WHERE userID = ?;");
         ps.setInt(1, userID);
         ps.executeUpdate();
     }
