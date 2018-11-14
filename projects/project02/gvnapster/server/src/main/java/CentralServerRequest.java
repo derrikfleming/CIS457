@@ -50,8 +50,9 @@ final class CentralServerRequest implements Runnable {
                 db.newClient(userInfo, fileList);
             }
 
+            // Loop until client disconnects.
             while (!socket.isClosed()) {
-
+                // TODO: wait for search terms from client...
             }
 
             // Disconnect client and remove client info/filelist from database.
