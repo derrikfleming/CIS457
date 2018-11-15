@@ -179,12 +179,13 @@ public class Database {
         while (fileSet.next()) {
             FileInfo file = new FileInfo();
 
-            int userID = fileSet.getInt(2);
+            int userID = fileSet.getInt(1);
+            String filename = fileSet.getString(2);
 
             // get the sharing user's info from tblUsers using the userID
             // the current record in tblFileList
             PreparedStatement ps =
-                    conn.prepareStatement( "SELECT id, connType, address, port " +
+                    conn.prepareStatement( "SELECT * " +
                                                 "FROM tblUsers " +
                                                 "WHERE id = ?;");
             ps.setInt(1, userID);
@@ -194,7 +195,7 @@ public class Database {
             file.setAddress(rs.getString(2));
             file.setPort(rs.getInt(3));
             file.setConType(rs.getString(4));
-            file.setfilename(rs.getString(5));
+            file.setfilename(filename);
 
             results.add(file);
         }
