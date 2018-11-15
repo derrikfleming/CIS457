@@ -47,8 +47,8 @@ public class FTPHelper {
 
     /**
      * Read line-by-line from reader to writer.
-     * @param  fin  [description]
-     * @param  fout [description]
+     * @param  fin  Input BufferedReader
+     * @param  fout Output BufferedWriter
      * @throws IOException If an I/O error occurs.
      */
     public static void readIntoWriter(BufferedReader fin, BufferedWriter fout) throws IOException {

@@ -80,7 +80,7 @@ public class FileInfo implements Serializable {
     }
 
     /**
-     * Recieve an ArrayList of FileInfo objects from a socket.
+     * Receive an ArrayList of FileInfo objects from a socket.
      * @param in Input socket
      * @return ArrayList of FileInfo objects recieved
      */

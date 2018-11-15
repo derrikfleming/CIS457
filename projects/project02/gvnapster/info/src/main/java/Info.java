@@ -6,6 +6,13 @@ public class Info implements Serializable {
 
     public Info() {}
 
+    public Info(String username, String address, String port, String conType) {
+        this.username = username;
+        this.address = address;
+        this.port = port;
+        this.conType = conType;
+    }
+
     public String getUsername() {
         return username;
     }
