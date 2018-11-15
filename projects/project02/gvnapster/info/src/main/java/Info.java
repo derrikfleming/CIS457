@@ -1,12 +1,16 @@
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Info implements Serializable {
-    private String username, address, port, conType;
+    private String username;
+    private InetAddress address;
+    private int port;
+    private String conType;
 
     public Info() {}
 
-    public Info(String username, String address, String port, String conType) {
+    public Info(String username, InetAddress address, int port, String conType) {
         this.username = username;
         this.address = address;
         this.port = port;
@@ -21,19 +25,31 @@ public class Info implements Serializable {
         this.username = username;
     }
 
-    public String getAddress() {
+    public InetAddress getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(InetAddress address) {
         this.address = address;
     }
 
-    public String getPort() {
+    public String getHostAddress() {
+        return address.getHostAddress();
+    }
+
+    public void setAddress(String address) {
+        try {
+            this.address = (InetAddress.getByName(address));
+        } catch (UnknownHostException e) {
+            System.err.println(e);
+        }
+    }
+
+    public int getPort() {
         return port;
     }
 
-    public void setPort(String port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

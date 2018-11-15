@@ -3,12 +3,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class FileInfo implements Serializable {
     private Info info;
     private String filename;
+
+    public FileInfo() {
+    }
 
     public FileInfo(Info info, String filename) {
         this.info = info;
@@ -31,19 +35,27 @@ public class FileInfo implements Serializable {
         info.setUsername(username);
     }
 
-    public String getAddress() {
+    public String getHostAddress() {
+        return info.getHostAddress();
+    }
+
+    public InetAddress getAddress() {
         return info.getAddress();
+    }
+
+    public void setAddress(InetAddress address) {
+        info.setAddress(address);
     }
 
     public void setAddress(String address) {
         info.setAddress(address);
     }
 
-    public String getPort() {
+    public int getPort() {
         return info.getPort();
     }
 
-    public void setPort(String port) {
+    public void setPort(int port) {
         info.setPort(port);
     }
 

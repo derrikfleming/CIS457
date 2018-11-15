@@ -65,8 +65,8 @@ final class CentralServerRequest implements Runnable {
     }
 
     // TODO: Modify to return ArrayList<FileInfo>
-    private ArrayList<String[]> search(String searchTerm) {
-        ArrayList<String[]> results = db.searchFileList(searchTerm);
+    private ArrayList<FileInfo> search(String searchTerm) {
+        ArrayList<FileInfo> results = db.searchFileList(searchTerm);
 
         return results;
     }

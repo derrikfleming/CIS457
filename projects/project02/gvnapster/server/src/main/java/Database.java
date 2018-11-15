@@ -74,7 +74,7 @@ public class Database {
                     conn.prepareStatement("INSERT INTO tblUsers " +
                                                 "VALUES(?,?,?,?,?);");
             ps.setString(1, clientInfo.getUsername());
-            ps.setString(2, clientInfo.getAddress());
+            ps.setString(2, clientInfo.getHostAddress());
             ps.setString(3, clientInfo.getConType());
             ps.execute();
         } catch (SQLException e) {
@@ -137,8 +137,8 @@ public class Database {
     }
 
     // TODO: Modify to return ArrayList<FileInfo>
-    public ArrayList<String[]> searchFileList(String searchTerm) {
-        ArrayList<String[]> results = new ArrayList<String[]>();
+    public ArrayList<FileInfo> searchFileList(String searchTerm) {
+        ArrayList<FileInfo> results = new ArrayList<>();
 
         try {
             //getting relevant file listings
@@ -151,6 +151,7 @@ public class Database {
             // records of relevant files
             ResultSet rs1 = ps.executeQuery();
 
+
             results = getUserData(rs1);
         } catch (SQLException e) {
             System.out.println(e);
@@ -159,13 +160,14 @@ public class Database {
         return results;
     }
 
-    // TODO: Modify to return Info
-    private ArrayList<String[]> getUserData(ResultSet fileSet) throws SQLException {
-        ArrayList<String[]> results = new ArrayList<String[]>();
+    // TODO: Modify to return ArrayList<FileInfo>
+    private ArrayList<FileInfo> getUserData(ResultSet fileSet) throws SQLException {
+        ArrayList<FileInfo> results = new ArrayList<>();
 
         //getting userdata regarding files
         //iterating through the ResultSet of relevant files
-        while(fileSet.next()){
+        while (fileSet.next()){
+            FileInfo file = new FileInfo();
             String[] record = new String[4];
             int userID = fileSet.getInt(2);
 
@@ -179,14 +181,19 @@ public class Database {
             ResultSet rs = ps.executeQuery();
 
             // add connType, then address, then port to record[]
-            for(int i = 0, j = 1; i < 3; i++, j++){
+            for (int i = 0, j = 1; i < 3; i++, j++){
                 record[i] = rs.getString(j);
             }
+            // TODO: I'm unsure of the exact schema that rs will return.
+            // TODO: Need help parsing rs into FileInfo instance.
+            file.setUsername(rs.getString(1));
+            file.setAddress(rs.getString(2));
+            file.setConType(rs.getString(3));
 
             // add filename to record[]
             record[3] = fileSet.getString("filename");
 
-            results.add(record);
+            results.add(file);
         }
         return results;
     }
