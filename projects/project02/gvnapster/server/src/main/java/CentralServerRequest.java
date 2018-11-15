@@ -64,7 +64,11 @@ final class CentralServerRequest implements Runnable {
         }
     }
 
-    // TODO: Modify to return ArrayList<FileInfo>
+    /**
+     * Search the database for filenames matching searchTerm.
+     * @param searchTerm string search for in filenames
+     * @return List of files and who has them
+     */
     private ArrayList<FileInfo> search(String searchTerm) {
         ArrayList<FileInfo> results = db.searchFileList(searchTerm);
 
