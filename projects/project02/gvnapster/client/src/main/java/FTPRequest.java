@@ -8,26 +8,26 @@ import java.util.*;
 
 final class FTPRequest implements Runnable {
     final static String CRLF = "\r\n";
-    Socket controlSocket;
-    BufferedReader inFromClient;
-    DataOutputStream outToClient;
+    private Socket controlSocket;
+    private BufferedReader inFromClient;
     // The root directory for the ftp server.
-    Path ftpRootDir = Paths.get("./ftp_server_root_dir");
+    private Path ftpRootDir;
 
     /**
      * FTPRequest Constructor
      * @param  socket    TCP socket to send/recieve control commands over.
+     * @param  ftpRootDir    The root directory for the ftp server.
      * @return           New FTPRequest Object
      * @throws Exception If an error occurs.
      */
-    public FTPRequest(Socket socket) throws Exception {
+    public FTPRequest(Socket socket, Path ftpRootDir) {
         try {
             controlSocket = socket;
-            outToClient = new DataOutputStream(controlSocket.getOutputStream());
             inFromClient = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         } catch (Exception e) {
             System.out.println(e);
         }
+        this.ftpRootDir = ftpRootDir;
     }
 
     /**
@@ -65,7 +65,7 @@ final class FTPRequest implements Runnable {
     void stor(int port, String filename) {
         try (Socket dataSocket = new Socket(controlSocket.getInetAddress(), port)) {
             try {
-                Path file = Paths.get(ftpRootDir + "/" + filename);
+                Path file = Paths.get(ftpRootDir.toString(), filename);
                 FTPHelper.recvFile(dataSocket, file);
             } catch (Exception e) {
                 System.out.println(e);
@@ -85,7 +85,7 @@ final class FTPRequest implements Runnable {
     void retr(int port, String filename) {
         try (Socket dataSocket = new Socket(controlSocket.getInetAddress(), port)) {
             try {
-                Path file = Paths.get(ftpRootDir + "/" + filename);
+                Path file = Paths.get(ftpRootDir.toString(), filename);
                 FTPHelper.sendFile(dataSocket, file);
             } catch (Exception e) {
                 System.out.println(e);
