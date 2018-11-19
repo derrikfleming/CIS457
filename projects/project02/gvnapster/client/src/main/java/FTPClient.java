@@ -1,19 +1,33 @@
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FTPClient implements Runnable {
     private FileInfo fileInfo;
     private Path ftpRootDir;
+
+    private Socket controlSocket;
     private DataOutputStream outToServer;
+    private DataInputStream inFromServer;
+    int controlPort, dataPort;
 
     final static String CRLF = "\r\n";
 
     public FTPClient(FileInfo fileInfo, Path ftpRootDir) {
         this.fileInfo = fileInfo;
         this.ftpRootDir = ftpRootDir;
+
+//        controlSocket = new Socket();
+        controlPort = fileInfo.getPort();
+        dataPort = controlPort + 1;
     }
 
     /**
@@ -22,18 +36,37 @@ public class FTPClient implements Runnable {
     public void run() {
         try {
             System.out.println("FTPClient thread has started.");
+
+            this.connect();
             this.retr();
 
+
+            controlSocket.close();
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    public void retr() {
-        // Retrieve a file from the server
-//        dataPort = dataPort + 2;
+    private void connect() {
+        try (Socket s = new Socket(fileInfo.getAddress(), fileInfo.getPort())) {
+            controlSocket = s;
+            System.out.println("You are connected to " + fileInfo.getAddress() + ":" + controlPort);
 
-        try (ServerSocket server = new ServerSocket(fileInfo.getPort())) {
+            // This should get wrapped in try-with-resources, but...issues.
+            outToServer = new DataOutputStream(controlSocket.getOutputStream());
+            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
+
+        } catch (IOException e) {
+            System.err.print(e);
+        }
+
+    }
+
+    private void retr() {
+        // Retrieve a file from the server
+        dataPort = dataPort + 2;
+
+        try (ServerSocket server = new ServerSocket(dataPort)) {
             // Build the retr command to send to server.
             String command = fileInfo.getPort() + " RETR " + fileInfo.getFilename() + " " + CRLF;
             // System.out.println("writing command to server:" + command);
