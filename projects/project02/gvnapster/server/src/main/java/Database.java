@@ -195,7 +195,7 @@ public class Database {
             file.setAddress(rs.getString(2));
             file.setPort(rs.getInt(3));
             file.setConType(rs.getString(4));
-            file.setfilename(filename);
+            file.setFilename(filename);
 
             results.add(file);
         }
