@@ -9,8 +9,12 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+import com.google.common.net.InetAddresses;
 
 public class Controller implements Initializable
 {
@@ -40,33 +44,52 @@ public class Controller implements Initializable
     /*** Pane 2 ***********************************************************/
 
     @FXML TextField keyWord;
-    @FXML TableView table;
-    TableColumn<String, String> speedColumn = new TableColumn<>("Speed");
-    TableColumn<String, String> hostNameColumn = new TableColumn<>("Hostname");
-    TableColumn<String, String> fileNameColumn = new TableColumn<>("Filename");
+    @FXML TableView<FileInfo> table;
+    TableColumn<FileInfo, String> speedColumn = new TableColumn<FileInfo, String>("Speed");
+    TableColumn<FileInfo, String> hostNameColumn = new TableColumn<FileInfo, String>("Hostname");
+    TableColumn<FileInfo, String> fileNameColumn = new TableColumn<FileInfo, String>("Filename");
 
-    private ObservableList<String> getData()
+    private ObservableList<FileInfo> getData()
     {
-        ObservableList<String> data = FXCollections.observableArrayList();
+        ArrayList<FileInfo> dataArray = new ArrayList<FileInfo>();
 
-        data.add("one");
-        data.add("two");
-        data.add("three");
+        Info myInfo = new Info("aldunc", "als address", 1234, "millenium falcon");
+        Info myInfo2 = new Info("derrik", "derriks address", 1234, "millenium falcon");
+        Info myInfo3 = new Info("joe", "joe's address", 1234, "millenium falcon");
+
+        FileInfo myFileInfo = new FileInfo( myInfo, "blah1.txt");
+        FileInfo myFileInfo2 = new FileInfo( myInfo2, "blah2.txt");
+        FileInfo myFileInfo3 = new FileInfo( myInfo3, "blah3.txt");
+
+        dataArray.add(myFileInfo);
+        dataArray.add(myFileInfo2);
+        dataArray.add(myFileInfo3);
+        
+        ObservableList<FileInfo> data = FXCollections.observableArrayList(dataArray);
         
         return data;
     }
 
     @FXML private void search(ActionEvent event) throws Exception
     {
-        speedColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
-        hostNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
-        fileNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
-
+        speedColumn.setCellValueFactory(param -> param.getValue().conTypeProperty());
         table.getColumns().add(speedColumn);
+
+        hostNameColumn.setCellValueFactory(param -> param.getValue().addressProperty());
         table.getColumns().add(hostNameColumn);
+
+        fileNameColumn.setCellValueFactory(param -> param.getValue().filenameProperty());
         table.getColumns().add(fileNameColumn);
 
+
         table.setItems(getData());
+    }
+
+    @FXML private void download(ActionEvent event) throws Exception
+    {
+        FileInfo selected = table.getSelectionModel().getSelectedItem();
+
+        System.out.println(selected.getFilename());
     }
 
     /*** End of Pane 2 ****************************************************/
