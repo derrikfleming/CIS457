@@ -27,16 +27,21 @@ public class Controller implements Initializable
     /*** ... initialized **************************************************/
     ////////////////////////////////////////////////////////////////////////
     /*** Pane 1 ***********************************************************/
-
+    
+    //CentralServer Infos
     @FXML TextField serverHostName;
-    @FXML TextField port;
+    @FXML TextField serverPort;
+
+    //Client/host Infos
     @FXML TextField userName;
     @FXML TextField hostName;
+    @FXML TextField hostPort;
+    @FXML TextField rootDir;
     @FXML ComboBox<String> speed;
 
     @FXML private void connect(ActionEvent event)
     {
-        System.out.println("\n\nConnected to: " + serverHostName.getText() + ", Port: " + port.getText());
+        System.out.println("\n\nConnected to: " + serverHostName.getText() + ", Server Port: " + serverPort.getText() + ", Host Port: " + hostPort.getText() + ", Root Dir: " + rootDir.getText());
         System.out.println("Username: " + userName.getText() + ", Hostname: " + hostName.getText() + ", Speed: " + speed.getValue());
     }
     /*** End of Pane 1 ****************************************************/
@@ -90,6 +95,7 @@ public class Controller implements Initializable
         FileInfo selected = table.getSelectionModel().getSelectedItem();
 
         System.out.println(selected.getFilename());
+        // TODO: spawn FTPClient
     }
 
     /*** End of Pane 2 ****************************************************/
