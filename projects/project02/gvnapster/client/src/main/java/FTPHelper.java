@@ -142,9 +142,4 @@ public class FTPHelper {
 //            out.close();
         // System.out.println("Data Socket closed");
     }
-
-    // public static void retr(Socket ) {
-    //     // TODO
-    // }
-
 }
