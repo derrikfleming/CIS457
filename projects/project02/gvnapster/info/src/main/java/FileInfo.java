@@ -1,8 +1,14 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -10,7 +16,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class FileInfo implements Serializable {
+public class FileInfo {
     private Info info;
     private StringProperty filename = new SimpleStringProperty();
 
@@ -90,8 +96,6 @@ public class FileInfo implements Serializable {
         this.filenameProperty().set(filename);
     }
 
-    // TODO: Implement XML serialization.
-
     /**
      * Send an ArrayList of FileInfo objects to a socket.
      * @param out Output socket
@@ -100,9 +104,13 @@ public class FileInfo implements Serializable {
     public static void sendFileInfoArrayList(Socket out, ArrayList<FileInfo> fileInfoArrayList) {
         try (
                 DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
-                ObjectOutputStream objectOut = new ObjectOutputStream(dataOut);
+                Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
+                BufferedWriter fout = new BufferedWriter(writer);
         ) {
-            objectOut.writeObject(fileInfoArrayList);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(fout, fileInfoArrayList);
+//            String json = objectMapper.writeValueAsString(fileInfoArrayList);
+//            dataOut.writeUTF(json);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,17 +119,21 @@ public class FileInfo implements Serializable {
     /**
      * Receive an ArrayList of FileInfo objects from a socket.
      * @param in Input socket
-     * @return ArrayList of FileInfo objects recieved
+     * @return ArrayList of FileInfo objects received
      */
     public static ArrayList<FileInfo> recvFileInfoArrayList(Socket in) {
         ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
-        try (ObjectInputStream objectIn = new ObjectInputStream(in.getInputStream())) {
-            try {
-                Object object = objectIn.readObject();
-                fileInfoArrayList = (ArrayList<FileInfo>) object;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+        try (
+                Reader reader = new InputStreamReader(in.getInputStream());
+                BufferedReader fin = new BufferedReader(reader);
+        ) {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            CollectionType javaType = objectMapper.getTypeFactory()
+                    .constructCollectionType(ArrayList.class, FileInfo.class);
+
+            fileInfoArrayList = objectMapper.readValue(fin, javaType);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

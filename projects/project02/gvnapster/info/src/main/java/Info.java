@@ -1,11 +1,9 @@
-import java.io.Serializable;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Info implements Serializable {
+public class Info {
     private StringProperty username = new SimpleStringProperty();
     private StringProperty address = new SimpleStringProperty();
     private IntegerProperty port = new SimpleIntegerProperty();
