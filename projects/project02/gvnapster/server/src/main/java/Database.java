@@ -74,7 +74,7 @@ public class Database {
                     conn.prepareStatement("INSERT INTO tblUsers " +
                                                 "VALUES(?,?,?,?,?);");
             ps.setString(1, clientInfo.getUsername());
-            ps.setString(2, clientInfo.getHostAddress());
+            ps.setString(2, clientInfo.getAddress());
             ps.setInt(3, clientInfo.getPort());
             ps.setString(4, clientInfo.getConType());
             ps.execute();
@@ -195,7 +195,7 @@ public class Database {
             file.setAddress(rs.getString(2));
             file.setPort(rs.getInt(3));
             file.setConType(rs.getString(4));
-            file.setfilename(filename);
+            file.setFilename(filename);
 
             results.add(file);
         }

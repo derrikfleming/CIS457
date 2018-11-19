@@ -1,22 +1,31 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class FileInfo implements Serializable {
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+public class FileInfo {
     private Info info;
-    private String filename;
+    private StringProperty filename = new SimpleStringProperty();
 
     public FileInfo() {
     }
 
     public FileInfo(Info info, String filename) {
         this.info = info;
-        this.filename = filename;
+        setFilename(filename);
     }
 
     public Info getInfo() {
@@ -27,6 +36,10 @@ public class FileInfo implements Serializable {
         this.info = info;
     }
 
+    public StringProperty usernameProperty() {
+        return this.info.usernameProperty();
+    }
+
     public String getUsername() {
         return info.getUsername();
     }
@@ -35,20 +48,20 @@ public class FileInfo implements Serializable {
         info.setUsername(username);
     }
 
-    public String getHostAddress() {
-        return info.getHostAddress();
+    public StringProperty addressProperty() {
+        return this.info.addressProperty();
     }
 
-    public InetAddress getAddress() {
+    public String getAddress() {
         return info.getAddress();
-    }
-
-    public void setAddress(InetAddress address) {
-        info.setAddress(address);
     }
 
     public void setAddress(String address) {
         info.setAddress(address);
+    }
+
+    public IntegerProperty portProperty() {
+        return this.info.portProperty();
     }
 
     public int getPort() {
@@ -59,6 +72,10 @@ public class FileInfo implements Serializable {
         info.setPort(port);
     }
 
+    public StringProperty conTypeProperty() {
+        return this.info.conTypeProperty();
+    }
+
     public String getConType() {
         return info.getConType();
     }
@@ -67,14 +84,18 @@ public class FileInfo implements Serializable {
         info.setConType(conType);
     }
 
-    public String getFilename() {
-        return filename;
+    public StringProperty filenameProperty() {
+        return this.filename;
     }
 
-    public void setfilename(String filename) {
-        this.filename = filename;
+    public String getFilename() {
+        return this.filenameProperty().get();
     }
-    
+
+    public void setFilename(String filename) {
+        this.filenameProperty().set(filename);
+    }
+
     /**
      * Send an ArrayList of FileInfo objects to a socket.
      * @param out Output socket
@@ -83,9 +104,13 @@ public class FileInfo implements Serializable {
     public static void sendFileInfoArrayList(Socket out, ArrayList<FileInfo> fileInfoArrayList) {
         try (
                 DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
-                ObjectOutputStream objectOut = new ObjectOutputStream(dataOut);
+                Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
+                BufferedWriter fout = new BufferedWriter(writer);
         ) {
-            objectOut.writeObject(fileInfoArrayList);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(fout, fileInfoArrayList);
+//            String json = objectMapper.writeValueAsString(fileInfoArrayList);
+//            dataOut.writeUTF(json);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,17 +119,21 @@ public class FileInfo implements Serializable {
     /**
      * Receive an ArrayList of FileInfo objects from a socket.
      * @param in Input socket
-     * @return ArrayList of FileInfo objects recieved
+     * @return ArrayList of FileInfo objects received
      */
     public static ArrayList<FileInfo> recvFileInfoArrayList(Socket in) {
         ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
-        try (ObjectInputStream objectIn = new ObjectInputStream(in.getInputStream())) {
-            try {
-                Object object = objectIn.readObject();
-                fileInfoArrayList = (ArrayList<FileInfo>) object;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+        try (
+                Reader reader = new InputStreamReader(in.getInputStream());
+                BufferedReader fin = new BufferedReader(reader);
+        ) {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            CollectionType javaType = objectMapper.getTypeFactory()
+                    .constructCollectionType(ArrayList.class, FileInfo.class);
+
+            fileInfoArrayList = objectMapper.readValue(fin, javaType);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

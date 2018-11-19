@@ -1,63 +1,68 @@
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
-public class Info implements Serializable {
-    private String username;
-    private InetAddress address;
-    private int port;
-    private String conType;
+public class Info {
+    private StringProperty username = new SimpleStringProperty();
+    private StringProperty address = new SimpleStringProperty();
+    private IntegerProperty port = new SimpleIntegerProperty();
+    private StringProperty conType = new SimpleStringProperty();
 
     public Info() {}
 
-    public Info(String username, InetAddress address, int port, String conType) {
-        this.username = username;
-        this.address = address;
-        this.port = port;
-        this.conType = conType;
+    public Info(String username, String address, int port, String conType) {
+        setUsername(username);
+        setAddress(address);
+        setPort(port);
+        setConType(conType);
+    }
+
+    public StringProperty usernameProperty() {
+        return this.username;
     }
 
     public String getUsername() {
-        return username;
+        return usernameProperty().get();
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.usernameProperty().set(username);
     }
 
-    public InetAddress getAddress() {
-        return address;
+    public StringProperty addressProperty() {
+        return this.address;
     }
 
-    public void setAddress(InetAddress address) {
-        this.address = address;
-    }
-
-    public String getHostAddress() {
-        return address.getHostAddress();
+    public String getAddress() {
+        return addressProperty().get();
     }
 
     public void setAddress(String address) {
-        try {
-            this.address = (InetAddress.getByName(address));
-        } catch (UnknownHostException e) {
-            System.err.println(e);
-        }
+        this.addressProperty().set(address);
+    }
+
+    public IntegerProperty portProperty() {
+        return this.port;
     }
 
     public int getPort() {
-        return port;
+        return portProperty().get();
     }
 
     public void setPort(int port) {
-        this.port = port;
+        this.portProperty().set(port);
+    }
+
+    public StringProperty conTypeProperty() {
+        return this.conType;
     }
 
     public String getConType() {
-        return conType;
+        return conTypeProperty().get();
     }
 
     public void setConType(String conType) {
-        this.conType = conType;
+        this.conTypeProperty().set(conType);
     }
 }
