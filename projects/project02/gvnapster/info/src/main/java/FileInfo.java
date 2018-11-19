@@ -3,20 +3,23 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class FileInfo implements Serializable {
     private Info info;
-    private String filename;
+    private StringProperty filename = new SimpleStringProperty();
 
     public FileInfo() {
     }
 
     public FileInfo(Info info, String filename) {
         this.info = info;
-        this.filename = filename;
+        setFilename(filename);
     }
 
     public Info getInfo() {
@@ -27,6 +30,10 @@ public class FileInfo implements Serializable {
         this.info = info;
     }
 
+    public StringProperty usernameProperty() {
+        return this.info.usernameProperty();
+    }
+
     public String getUsername() {
         return info.getUsername();
     }
@@ -35,20 +42,20 @@ public class FileInfo implements Serializable {
         info.setUsername(username);
     }
 
-    public String getHostAddress() {
-        return info.getHostAddress();
+    public StringProperty addressProperty() {
+        return this.info.addressProperty();
     }
 
-    public InetAddress getAddress() {
+    public String getAddress() {
         return info.getAddress();
-    }
-
-    public void setAddress(InetAddress address) {
-        info.setAddress(address);
     }
 
     public void setAddress(String address) {
         info.setAddress(address);
+    }
+
+    public IntegerProperty portProperty() {
+        return this.info.portProperty();
     }
 
     public int getPort() {
@@ -59,6 +66,10 @@ public class FileInfo implements Serializable {
         info.setPort(port);
     }
 
+    public StringProperty conTypeProperty() {
+        return this.info.conTypeProperty();
+    }
+
     public String getConType() {
         return info.getConType();
     }
@@ -67,14 +78,20 @@ public class FileInfo implements Serializable {
         info.setConType(conType);
     }
 
-    public String getFilename() {
-        return filename;
+    public StringProperty filenameProperty() {
+        return this.filename;
     }
 
-    public void setfilename(String filename) {
-        this.filename = filename;
+    public String getFilename() {
+        return this.filenameProperty().get();
     }
-    
+
+    public void setFilename(String filename) {
+        this.filenameProperty().set(filename);
+    }
+
+    // TODO: Implement XML serialization.
+
     /**
      * Send an ArrayList of FileInfo objects to a socket.
      * @param out Output socket
