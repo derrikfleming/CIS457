@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 final class CentralServerRequest implements Runnable {
@@ -37,32 +38,44 @@ final class CentralServerRequest implements Runnable {
             System.out.println("Getting ready to process req's");
 
             // Initialize client connection
-            if(this.socket.isConnected()){
+            if(socket.isConnected()){
                 System.out.println("Client connected.");
 
                 // Receive client's file list.
                 fileList = FileInfo.recvFileInfoArrayList(socket);
+
                 System.out.println(fileList);
-                fileList.forEach(fileInfo -> {System.out.print(fileInfo.getFilename());});
+                fileList.forEach(fileInfo -> {
+//                    System.out.println(fileInfo.getAddress());
+//                    System.out.println(fileInfo.getPort());
+                    System.out.println(fileInfo.getFilename());
+                });
+
                 userInfo = fileList.get(0).getInfo();
 
                 db.newClient(userInfo, fileList);
             }
 
-
+            System.out.println("Before search loop");
             // TODO: double-check this shiiiiiit
             // Loop until client disconnects.
+//            while (socket.isConnected()) {
             while (!socket.isClosed()) {
+                System.out.println("Begin search loop");
                 //getting search term from client
                 String searchTerm = getSearchTerm();
 
                 //sending search results to centralclient
                 FileInfo.sendFileInfoArrayList(socket, search(searchTerm));
             }
+            System.out.println("After search loop");
 
             // Disconnect client and remove client info/filelist from database.
             socket.close();
-            db.clientDisconnect(userInfo);
+            // TODO: FIX this shiiiiiit.
+            ArrayList<FileInfo> tempSearch = db.searchFileList("UTF");
+            tempSearch.forEach(fileInfo -> {System.out.println(fileInfo.getFilename());});
+//            db.clientDisconnect(userInfo);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -75,10 +88,14 @@ final class CentralServerRequest implements Runnable {
      */
     private String getSearchTerm(){
         String searchTerm = "";
-        try(BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
-            searchTerm = inFromClient.readLine();
+        try (
+                Reader reader = new InputStreamReader(socket.getInputStream());
+                BufferedReader fin = new BufferedReader(reader);
+        ) {
+            searchTerm = fin.readLine();
+            System.out.println("getSearchTerm() ->" + searchTerm);
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         return searchTerm;

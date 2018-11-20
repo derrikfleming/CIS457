@@ -29,13 +29,20 @@ public class Database {
      * @param clientInfo Client info.
      * @param clientFileInfos List of files from client.
      */
-    public void newClient(Info clientInfo, ArrayList<FileInfo> clientFileInfos) {
+    public void newClient(Info clientInfo, ArrayList<FileInfo> clientFileInfos) throws SQLException {
         int userID;
         String username = clientInfo.getUsername();
         if(!userExists(username)){
             writeUserData(clientInfo);
             userID = getUserID(username);
+            // TODO: FIXME
             writeFileList(userID, clientFileInfos);
+//            try {
+//                userID = getUserID(username);
+//                writeFileList(userID, clientFileInfos);
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
@@ -44,7 +51,7 @@ public class Database {
      * Wrapper to newClient(Info clientInfo, ArrayList<FileInfo> clientFileInfos)
      * @param clientFileInfos List of files from client, along with associated client info.
      */
-    public void newClient(ArrayList<FileInfo> clientFileInfos) {
+    public void newClient(ArrayList<FileInfo> clientFileInfos) throws SQLException {
         Info clientInfo = clientFileInfos.get(0).getInfo();
         newClient(clientInfo, clientFileInfos);
     }
@@ -71,35 +78,41 @@ public class Database {
     private void writeUserData(Info clientInfo){
         try {
             PreparedStatement ps =
-                    conn.prepareStatement("INSERT INTO tblUsers " +
-                                                "VALUES(?,?,?,?,?);");
+                    conn.prepareStatement("INSERT INTO tblUsers (username, address, port, connType)" +
+                                                "VALUES(?,?,?,?);");
+//            ps.setInt(0, null);
             ps.setString(1, clientInfo.getUsername());
             ps.setString(2, clientInfo.getAddress());
             ps.setInt(3, clientInfo.getPort());
             ps.setString(4, clientInfo.getConType());
             ps.execute();
         } catch (SQLException e) {
-            System.out.println(e);
+//            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
     private void writeFileList(int userID, ArrayList<FileInfo> clientFileInfos) {
         for (int i = 0; i < clientFileInfos.size(); i++) {
+            System.out.println(clientFileInfos.get(i).getFilename());
             try {
                 PreparedStatement ps =
-                        conn.prepareStatement("INSERT INTO tblFileList " +
-                                                    "VALUES(?,?,?);");
+                        conn.prepareStatement("INSERT INTO tblFileList (userID, filename)" +
+                                                    "VALUES(?,?);");
                 ps.setInt(1, userID);
                 ps.setString(2, clientFileInfos.get(i).getFilename());
+                // TODO: FIXME
                 ps.execute();
             } catch (SQLException e) {
-                System.out.println(e);
+//                System.out.println(e);
+                e.printStackTrace();
             }
         }
     }
 
     private int getUserID(String username){
-        int userID = Integer.parseInt(null);
+//        int userID = Integer.parseInt(null);
+        int userID = 0;
 
         try {
             PreparedStatement ps =
@@ -111,7 +124,8 @@ public class Database {
 
             userID = rs.getInt("id");
         } catch (SQLException e) {
-            System.out.println(e);
+//            System.out.println(e);
+            e.printStackTrace();
         }
 
         return userID;
@@ -123,7 +137,8 @@ public class Database {
         try {
             deleteUser(userID);
         } catch (SQLException e) {
-            System.out.println(e);
+//            System.out.println(e);
+            e.printStackTrace();
         }
 
     }
