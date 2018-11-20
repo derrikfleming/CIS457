@@ -54,8 +54,9 @@ final class CentralServerRequest implements Runnable {
                 userInfo = fileList.get(0).getInfo();
 
                 db.newClient(userInfo, fileList);
-            }
 
+            }
+            System.out.println("Socket.isClosed @ pre-searchloop -> " + socket.isClosed());
             System.out.println("Before search loop");
             // TODO: double-check this shiiiiiit
             // Loop until client disconnects.
@@ -88,10 +89,9 @@ final class CentralServerRequest implements Runnable {
      */
     private String getSearchTerm(){
         String searchTerm = "";
-        try (
-                Reader reader = new InputStreamReader(socket.getInputStream());
-                BufferedReader fin = new BufferedReader(reader);
-        ) {
+        try {
+            Reader reader = new InputStreamReader(socket.getInputStream());
+            BufferedReader fin = new BufferedReader(reader);
             searchTerm = fin.readLine();
             System.out.println("getSearchTerm() ->" + searchTerm);
         } catch (IOException e) {

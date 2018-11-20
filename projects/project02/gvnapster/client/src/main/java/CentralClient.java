@@ -1,5 +1,3 @@
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -17,6 +15,7 @@ public class CentralClient {
 
     String serverAddr;
     int controlPort;
+    Path rootDirPath;
 
     final static String CRLF = "\r\n";
 
@@ -24,19 +23,20 @@ public class CentralClient {
         return controlSocket;
     }
 
-    public CentralClient(String serverAddr, int port) {
+    public CentralClient(String serverAddr, int controlPort, Path rootDirPath) {
         this.serverAddr = serverAddr;
-        this.controlPort = port;
+        this.controlPort = controlPort;
+        this.rootDirPath = rootDirPath;
     }
 
     public void connect() {
-        connect(serverAddr, controlPort);
+        connect(this.serverAddr, this.controlPort);
     }
 
     public void connect(String serverAddr, int port) {
 //        try (Socket s = new Socket(serverAddr, port)) {
         try {
-            controlSocket = new Socket(serverAddr, port);
+            this.controlSocket = new Socket(serverAddr, port);
 //            controlSocket = s;
             System.out.println("You are connected to " + serverAddr + ":" + port);
 
@@ -55,7 +55,8 @@ public class CentralClient {
      * @return results ArrayList<FileInfo> to display in Client UI
      */
     public ArrayList<FileInfo> search(String searchTerm){
-        try(DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream())){
+        try{
+            DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
             outToServer.writeBytes(searchTerm + CRLF);
         } catch (IOException e) {
             System.err.println(e);
@@ -70,12 +71,12 @@ public class CentralClient {
      * @param dir Directory to list files from
      * @param hostInfo Host Info for creating FileInfo
      */
-    public static void list(Socket out, Path dir, Info hostInfo) {
+    public void list(Info hostInfo) {
         ArrayList<FileInfo> files = new ArrayList<>();
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+        try {
 //                stream.forEach(file -> {files.add(file)});
-
+            DirectoryStream<Path> stream = Files.newDirectoryStream(this.rootDirPath);
             for (Path file : stream) {
                 files.add(new FileInfo(hostInfo, file.getFileName().toString()));
 //                    dataOutToClient.writeUTF(file.getFileName().toString() + CRLF);
@@ -84,7 +85,7 @@ public class CentralClient {
 
             // Write files list to output socket.
             try {
-                FileInfo.sendFileInfoArrayList(out, files);
+                FileInfo.sendFileInfoArrayList(this.controlSocket, files);
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -97,4 +98,6 @@ public class CentralClient {
 //            out.close();
         // System.out.println("Data Socket closed");
     }
+
+
 }
