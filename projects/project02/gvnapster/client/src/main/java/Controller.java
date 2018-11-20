@@ -18,6 +18,12 @@ import com.google.common.net.InetAddresses;
 
 public class Controller implements Initializable
 {
+
+    CentralClient centralClient;
+    String serverName;
+    int centralPort;
+    Info clientInfo;
+    FileInfo clientFileInfo;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
@@ -43,6 +49,10 @@ public class Controller implements Initializable
     {
         System.out.println("\n\nConnected to: " + serverHostName.getText() + ", Server Port: " + serverPort.getText() + ", Host Port: " + hostPort.getText() + ", Root Dir: " + rootDir.getText());
         System.out.println("Username: " + userName.getText() + ", Hostname: " + hostName.getText() + ", Speed: " + speed.getValue());
+
+        centralPort = Integer.parseInt(serverPort.getText());
+        clientInfo = new Info(userName.getText(), hostName.getText(), Integer.parseInt(hostPort.getText()), speed.getValue());
+        centralClient = new CentralClient();
     }
     /*** End of Pane 1 ****************************************************/
     ////////////////////////////////////////////////////////////////////////

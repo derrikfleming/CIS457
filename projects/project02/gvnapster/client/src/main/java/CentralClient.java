@@ -15,6 +15,10 @@ public class CentralClient {
     private DataInputStream inFromServer;
     int controlPort;
 
+    public CentralClient(){
+
+    }
+
     /**
      * Send the searchTerm to the CentralServer thread, return the results
      * @param searchTerm
