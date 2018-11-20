@@ -15,6 +15,20 @@ public class CentralClient {
     private DataInputStream inFromServer;
     int controlPort;
 
+    /**
+     * Send the searchTerm to the CentralServer thread, return the results
+     * @param searchTerm
+     * @return results ArrayList<FileInfo> to display in Client UI
+     */
+    public ArrayList<FileInfo> search(String searchTerm){
+        try(DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream())){
+            outToServer.writeBytes(searchTerm + "\r\n");
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        return FileInfo.recvFileInfoArrayList(controlSocket);
+    }
 
     /**
      * List all files on the server

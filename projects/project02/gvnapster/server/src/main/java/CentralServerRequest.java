@@ -1,7 +1,6 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.sun.xml.internal.bind.v2.TODO;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -50,9 +49,15 @@ final class CentralServerRequest implements Runnable {
                 db.newClient(userInfo, fileList);
             }
 
+
+            // TODO: double-check this shiiiiiit
             // Loop until client disconnects.
             while (!socket.isClosed()) {
-                // TODO: wait for search terms from client...
+                //getting search term from client
+                String searchTerm = getSearchTerm();
+
+                //sending search results to centralclient
+                FileInfo.sendFileInfoArrayList(socket, search(searchTerm));
             }
 
             // Disconnect client and remove client info/filelist from database.
@@ -65,13 +70,29 @@ final class CentralServerRequest implements Runnable {
     }
 
     /**
+     * Receives the search term from the client
+     * @return the search term
+     */
+    private String getSearchTerm(){
+        String searchTerm = "";
+        try(BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
+            searchTerm = inFromClient.readLine();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        return searchTerm;
+    }
+
+    /**
      * Search the database for filenames matching searchTerm.
      * @param searchTerm string search for in filenames
      * @return List of files and who has them
      */
     private ArrayList<FileInfo> search(String searchTerm) {
         ArrayList<FileInfo> results = db.searchFileList(searchTerm);
-
         return results;
     }
+
+
 }
