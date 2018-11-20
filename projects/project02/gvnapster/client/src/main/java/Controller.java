@@ -3,8 +3,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.ComboBox;
-
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +20,10 @@ public class Controller implements Initializable
         speed.getItems().setAll("T3","T1","Cable","DSL","FM","AM","Millenium Falcon");
     }
 
+    /*** ... initialized **************************************************/
+    ////////////////////////////////////////////////////////////////////////
     /*** Pane 1 ***********************************************************/
+
     @FXML TextField serverHostName;
     @FXML TextField port;
     @FXML TextField userName;
@@ -30,18 +36,43 @@ public class Controller implements Initializable
         System.out.println("Username: " + userName.getText() + ", Hostname: " + hostName.getText() + ", Speed: " + speed.getValue());
     }
     /*** End of Pane 1 ****************************************************/
-
+    ////////////////////////////////////////////////////////////////////////
     /*** Pane 2 ***********************************************************/
+
     @FXML TextField keyWord;
     @FXML TableView table;
+    TableColumn<String, String> speedColumn = new TableColumn<>("Speed");
+    TableColumn<String, String> hostNameColumn = new TableColumn<>("Hostname");
+    TableColumn<String, String> fileNameColumn = new TableColumn<>("Filename");
 
-    @FXML private void search(ActionEvent event)
+    private ObservableList<String> getData()
     {
-        
-    }
-    /*** End of Pane 2 ****************************************************/
+        ObservableList<String> data = FXCollections.observableArrayList();
 
+        data.add("one");
+        data.add("two");
+        data.add("three");
+        
+        return data;
+    }
+
+    @FXML private void search(ActionEvent event) throws Exception
+    {
+        speedColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
+        hostNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
+        fileNameColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
+
+        table.getColumns().add(speedColumn);
+        table.getColumns().add(hostNameColumn);
+        table.getColumns().add(fileNameColumn);
+
+        table.setItems(getData());
+    }
+
+    /*** End of Pane 2 ****************************************************/
+    ////////////////////////////////////////////////////////////////////////
     /*** Pane 3 ***********************************************************/
+
     @FXML TextField command;
     @FXML TextArea commandTextArea;
 
@@ -49,5 +80,7 @@ public class Controller implements Initializable
     {
         commandTextArea.setText("~: " + command.getText());
     }
+
     /*** End of Pane 3 ****************************************************/
 }
+
