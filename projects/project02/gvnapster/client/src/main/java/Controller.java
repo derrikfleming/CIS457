@@ -11,6 +11,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -24,10 +26,25 @@ public class Controller implements Initializable
     int centralPort;
     Info clientInfo;
     FileInfo clientFileInfo;
+
+    private final ObservableList<FileInfo> fileInfoList = FXCollections.observableArrayList();
+
+    private Path rootDirPath;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
         speed.getItems().setAll("T3","T1","Cable","DSL","FM","AM","Millenium Falcon");
+
+        // Bind FileInfo fields to the table cols.
+        speedColumn.setCellValueFactory(param -> param.getValue().conTypeProperty());
+        table.getColumns().add(speedColumn);
+
+        hostNameColumn.setCellValueFactory(param -> param.getValue().addressProperty());
+        table.getColumns().add(hostNameColumn);
+
+        fileNameColumn.setCellValueFactory(param -> param.getValue().filenameProperty());
+        table.getColumns().add(fileNameColumn);
     }
 
     /*** ... initialized **************************************************/
@@ -51,8 +68,16 @@ public class Controller implements Initializable
         System.out.println("Username: " + userName.getText() + ", Hostname: " + hostName.getText() + ", Speed: " + speed.getValue());
 
         centralPort = Integer.parseInt(serverPort.getText());
+
         clientInfo = new Info(userName.getText(), hostName.getText(), Integer.parseInt(hostPort.getText()), speed.getValue());
-        centralClient = new CentralClient();
+
+        centralClient = new CentralClient(serverHostName.getText(), centralPort);
+
+        centralClient.connect();
+
+        rootDirPath = Paths.get(rootDir.getText());
+
+        CentralClient.list(centralClient.getControlSocket(), rootDirPath, clientInfo);
     }
     /*** End of Pane 1 ****************************************************/
     ////////////////////////////////////////////////////////////////////////
@@ -87,17 +112,22 @@ public class Controller implements Initializable
 
     @FXML private void search(ActionEvent event) throws Exception
     {
-        speedColumn.setCellValueFactory(param -> param.getValue().conTypeProperty());
-        table.getColumns().add(speedColumn);
+        String searchTerm = keyWord.getText();
 
-        hostNameColumn.setCellValueFactory(param -> param.getValue().addressProperty());
-        table.getColumns().add(hostNameColumn);
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            ArrayList<FileInfo> searchResults = centralClient.search(searchTerm);
 
-        fileNameColumn.setCellValueFactory(param -> param.getValue().filenameProperty());
-        table.getColumns().add(fileNameColumn);
+//            ObservableList<FileInfo> data = FXCollections.observableArrayList(searchResults);
 
 
-        table.setItems(getData());
+//            table.setItems(getData());
+
+            // Clear the fileInfoList, then add the new searchResults
+            fileInfoList.removeAll(fileInfoList);
+            fileInfoList.addAll(searchResults);
+
+            table.refresh();
+        }
     }
 
     @FXML private void download(ActionEvent event) throws Exception

@@ -1,3 +1,4 @@
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,12 +12,41 @@ import java.util.ArrayList;
 public class CentralClient {
 
     private Socket controlSocket;
-    private DataOutputStream outToServer;
-    private DataInputStream inFromServer;
+//    private DataOutputStream outToServer;
+//    private DataInputStream inFromServer;
+
+    String serverAddr;
     int controlPort;
 
-    public CentralClient(){
+    final static String CRLF = "\r\n";
 
+    public Socket getControlSocket() {
+        return controlSocket;
+    }
+
+    public CentralClient(String serverAddr, int port) {
+        this.serverAddr = serverAddr;
+        this.controlPort = port;
+    }
+
+    public void connect() {
+        connect(serverAddr, controlPort);
+    }
+
+    public void connect(String serverAddr, int port) {
+//        try (Socket s = new Socket(serverAddr, port)) {
+        try {
+            controlSocket = new Socket(serverAddr, port);
+//            controlSocket = s;
+            System.out.println("You are connected to " + serverAddr + ":" + port);
+
+            // This should get wrapped in try-with-resources, but...issues.
+//            outToServer = new DataOutputStream(controlSocket.getOutputStream());
+//            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
+
+        } catch (IOException e) {
+            System.err.print(e);
+        }
     }
 
     /**
@@ -26,7 +56,7 @@ public class CentralClient {
      */
     public ArrayList<FileInfo> search(String searchTerm){
         try(DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream())){
-            outToServer.writeBytes(searchTerm + "\r\n");
+            outToServer.writeBytes(searchTerm + CRLF);
         } catch (IOException e) {
             System.err.println(e);
         }

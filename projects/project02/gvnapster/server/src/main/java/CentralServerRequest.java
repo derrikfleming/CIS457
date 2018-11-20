@@ -1,5 +1,3 @@
-import com.sun.xml.internal.bind.v2.TODO;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -44,6 +42,8 @@ final class CentralServerRequest implements Runnable {
 
                 // Receive client's file list.
                 fileList = FileInfo.recvFileInfoArrayList(socket);
+                System.out.println(fileList);
+                fileList.forEach(fileInfo -> {System.out.print(fileInfo.getFilename());});
                 userInfo = fileList.get(0).getInfo();
 
                 db.newClient(userInfo, fileList);
