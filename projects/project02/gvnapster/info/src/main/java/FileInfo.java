@@ -1,8 +1,13 @@
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+//import com.fasterxml.jackson.core.JsonParser;
+//import com.fasterxml.jackson.core.type.TypeReference;
+//import com.fasterxml.jackson.databind.DeserializationFeature;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.type.CollectionType;
+//import com.google.common.reflect.TypeToInstanceMap;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import org.hildan.fxgson.FxGson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -118,11 +124,23 @@ public class FileInfo {
      * @param fileInfoArrayList ArrayList of FileInfo objects to send
      */
     public static void sendFileInfoArrayList(Writer fout, ArrayList<FileInfo> fileInfoArrayList) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
-            objectMapper.writeValue(fout, fileInfoArrayList);
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
+//            objectMapper.writeValue(fout, fileInfoArrayList);
 //            fout.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        Gson gson = FxGson.create();
+//        Gson gson = new Gson();
+        Type fileInfoType = new TypeToken<ArrayList<FileInfo>>() {}.getType();
+        String json = gson.toJson(fileInfoArrayList, fileInfoType);
+        System.out.println(json);
+        try {
+            fout.write(json);
+            fout.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,15 +153,20 @@ public class FileInfo {
      */
     public static ArrayList<FileInfo> recvFileInfoArrayList(Reader fin) {
         ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
-            CollectionType javaType = objectMapper.getTypeFactory()
-                    .constructCollectionType(ArrayList.class, FileInfo.class);
-            fileInfoArrayList = objectMapper.readValue(fin, javaType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
+//            CollectionType javaType = objectMapper.getTypeFactory()
+//                    .constructCollectionType(ArrayList.class, FileInfo.class);
+//            fileInfoArrayList = objectMapper.readValue(fin, javaType);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        Gson gson = FxGson.create();
+//        Gson gson = new Gson();
+        Type fileInfoType = new TypeToken<ArrayList<FileInfo>>() {}.getType();
+        fileInfoArrayList = gson.fromJson(fin, fileInfoType);
         return fileInfoArrayList;
     }
 }
