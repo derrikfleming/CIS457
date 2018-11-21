@@ -66,7 +66,7 @@ public class CentralClient {
      */
     public ArrayList<FileInfo> search(String searchTerm){
         try{
-            DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
+//            DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
             outToServer.writeBytes(searchTerm + CRLF);
         } catch (IOException e) {
             System.err.println(e);
