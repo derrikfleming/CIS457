@@ -1,5 +1,4 @@
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
@@ -16,6 +15,10 @@ public class CentralClient {
     String serverAddr;
     int controlPort;
     Path rootDirPath;
+
+    //reader/writer
+    BufferedReader fin;
+    BufferedWriter fout;
 
     final static String CRLF = "\r\n";
 
@@ -40,6 +43,15 @@ public class CentralClient {
 //            controlSocket = s;
             System.out.println("You are connected to " + serverAddr + ":" + port);
 
+            //out
+            DataOutputStream dataOut = new DataOutputStream(controlSocket.getOutputStream());
+            Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
+            this.fout = new BufferedWriter(writer);
+
+            //in
+            Reader reader = new InputStreamReader(controlSocket.getInputStream());
+            this.fin = new BufferedReader(reader);
+
             // This should get wrapped in try-with-resources, but...issues.
 //            outToServer = new DataOutputStream(controlSocket.getOutputStream());
 //            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
@@ -62,13 +74,11 @@ public class CentralClient {
             System.err.println(e);
         }
 
-        return FileInfo.recvFileInfoArrayList(controlSocket);
+        return FileInfo.recvFileInfoArrayList(fin);
     }
 
     /**
      * List all files on the server
-     * @param out Output socket
-     * @param dir Directory to list files from
      * @param hostInfo Host Info for creating FileInfo
      */
     public void list(Info hostInfo) {
@@ -85,7 +95,7 @@ public class CentralClient {
 
             // Write files list to output socket.
             try {
-                FileInfo.sendFileInfoArrayList(this.controlSocket, files);
+                FileInfo.sendFileInfoArrayList(this.fout, files);
             } catch (Exception e) {
                 System.out.println(e);
             }

@@ -28,6 +28,7 @@ public class Model {
 
         centralClient.connect();
         centralClient.list(this.clientInfo);
+        centralClient.connect();
     }
 
     public void search (String searchTerm) {

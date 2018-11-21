@@ -13,6 +13,9 @@ final class CentralServerRequest implements Runnable {
     //filelist ArrayList format <filename> -> <filename> -> ...
     private Info userInfo;
     private ArrayList<FileInfo> fileList;
+    //reader/writer
+    private BufferedReader fin;
+    private BufferedWriter fout;
 
 
     public CentralServerRequest(Socket socket) throws Exception {
@@ -20,6 +23,15 @@ final class CentralServerRequest implements Runnable {
             this.socket = socket;
 //            out = new DataOutputStream(this.socket.getOutputStream());
 //            in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+            //out
+            DataOutputStream dataOut = new DataOutputStream(socket.getOutputStream());
+            Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
+            this.fout = new BufferedWriter(writer);
+
+            //in
+            Reader reader = new InputStreamReader(socket.getInputStream());
+            this.fin = new BufferedReader(reader);
 
             // Test CentralServer thread
             System.out.println("CentralServer thread started!");
@@ -42,7 +54,7 @@ final class CentralServerRequest implements Runnable {
                 System.out.println("Client connected.");
 
                 // Receive client's file list.
-                fileList = FileInfo.recvFileInfoArrayList(socket);
+                fileList = FileInfo.recvFileInfoArrayList(fin);
 
                 System.out.println(fileList);
                 fileList.forEach(fileInfo -> {
@@ -64,10 +76,12 @@ final class CentralServerRequest implements Runnable {
             while (!socket.isClosed()) {
                 System.out.println("Begin search loop");
                 //getting search term from client
-                String searchTerm = getSearchTerm();
+                fileList = FileInfo.recvFileInfoArrayList(fin);
+
+                System.out.println(fileList);
 
                 //sending search results to centralclient
-                FileInfo.sendFileInfoArrayList(socket, search(searchTerm));
+//                FileInfo.sendFileInfoArrayList(socket, search(searchTerm));
             }
             System.out.println("After search loop");
 

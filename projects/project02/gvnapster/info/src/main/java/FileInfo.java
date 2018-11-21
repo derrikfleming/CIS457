@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
@@ -102,16 +103,12 @@ public class FileInfo {
      * @param out Output socket
      * @param fileInfoArrayList ArrayList of FileInfo objects to send
      */
-    public static void sendFileInfoArrayList(Socket out, ArrayList<FileInfo> fileInfoArrayList) {
+    public static void sendFileInfoArrayList(BufferedWriter fout, ArrayList<FileInfo> fileInfoArrayList) {
         try {
-            DataOutputStream dataOut = new DataOutputStream(out.getOutputStream());
-            Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
-            BufferedWriter fout = new BufferedWriter(writer);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
             objectMapper.writeValue(fout, fileInfoArrayList);
-//            String json = objectMapper.writeValueAsString(fileInfoArrayList);
-//            dataOut.writeUTF(json);
+            fout.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -122,18 +119,14 @@ public class FileInfo {
      * @param in Input socket
      * @return ArrayList of FileInfo objects received
      */
-    public static ArrayList<FileInfo> recvFileInfoArrayList(Socket in) {
+    public static ArrayList<FileInfo> recvFileInfoArrayList(BufferedReader fin) {
         ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
         try {
-            Reader reader = new InputStreamReader(in.getInputStream());
-            BufferedReader fin = new BufferedReader(reader);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
             CollectionType javaType = objectMapper.getTypeFactory()
                     .constructCollectionType(ArrayList.class, FileInfo.class);
-
             fileInfoArrayList = objectMapper.readValue(fin, javaType);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
