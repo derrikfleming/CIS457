@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -98,9 +99,22 @@ public class FileInfo {
         this.filenameProperty().set(filename);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n------ File Information-----\n");
+        sb.append("Username: " + getUsername() + "\n");
+        sb.append("Address: " + getAddress() + "\n");
+        sb.append("Port: " + getPort() + "\n");
+        sb.append("ConType: " + getConType() + "\n");
+        sb.append("Filename: " + getFilename() + "\n");
+        sb.append("*****************************");
+        return sb.toString();
+    }
+
     /**
      * Send an ArrayList of FileInfo objects to a socket.
-     * @param out Output socket
+     * @param fout Output socket
      * @param fileInfoArrayList ArrayList of FileInfo objects to send
      */
     public static void sendFileInfoArrayList(Writer fout, ArrayList<FileInfo> fileInfoArrayList) {
@@ -116,7 +130,7 @@ public class FileInfo {
 
     /**
      * Receive an ArrayList of FileInfo objects from a socket.
-     * @param in Input socket
+     * @param fin Input socket
      * @return ArrayList of FileInfo objects received
      */
     public static ArrayList<FileInfo> recvFileInfoArrayList(Reader fin) {
