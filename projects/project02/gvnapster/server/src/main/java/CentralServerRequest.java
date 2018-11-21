@@ -92,7 +92,9 @@ final class CentralServerRequest implements Runnable {
             socket.close();
             // TODO: FIX this shiiiiiit.
             ArrayList<FileInfo> tempSearch = db.searchFileList("UTF");
-            tempSearch.forEach(fileInfo -> {System.out.println(fileInfo.getFilename());});
+            tempSearch.forEach(fileInfo -> {
+                System.out.println("filename: " + fileInfo.getFilename());
+            });
 //            db.clientDisconnect(userInfo);
 
         } catch (Exception e) {
@@ -107,8 +109,6 @@ final class CentralServerRequest implements Runnable {
     private String getSearchTerm(){
         String searchTerm = "";
         try {
-            Reader reader = new InputStreamReader(socket.getInputStream());
-            BufferedReader fin = new BufferedReader(reader);
             searchTerm = fin.readLine();
             System.out.println("getSearchTerm() ->" + searchTerm);
         } catch (IOException e) {
