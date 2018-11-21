@@ -71,13 +71,13 @@ public class Controller implements Initializable
 
         clientInfo = new Info(userName.getText(), hostName.getText(), Integer.parseInt(hostPort.getText()), speed.getValue());
 
-        centralClient = new CentralClient(serverHostName.getText(), centralPort);
+        rootDirPath = Paths.get(rootDir.getText());
+
+        centralClient = new CentralClient(serverHostName.getText(), centralPort, rootDirPath);
 
         centralClient.connect();
 
-        rootDirPath = Paths.get(rootDir.getText());
-
-        CentralClient.list(centralClient.getControlSocket(), rootDirPath, clientInfo);
+        centralClient.list(clientInfo);
     }
     /*** End of Pane 1 ****************************************************/
     ////////////////////////////////////////////////////////////////////////
