@@ -26,7 +26,7 @@ public class Controller implements Initializable
 
     Model model;
 
-    private final ObservableList<FileInfo> fileInfoList = FXCollections.observableArrayList();
+    private ObservableList<FileInfo> fileInfoList = FXCollections.observableArrayList();
 
     private Path rootDirPath;
 
@@ -49,7 +49,10 @@ public class Controller implements Initializable
         fileNameColumn.setCellValueFactory(param -> param.getValue().filenameProperty());
         table.getColumns().add(fileNameColumn);
 
+        fileInfoList.addListener((ListChangeListener<FileInfo>) c -> c.getList());
+
     }
+
 
     /*** ... initialized **************************************************/
     ////////////////////////////////////////////////////////////////////////
@@ -94,26 +97,9 @@ public class Controller implements Initializable
     {
         String searchTerm = searchTermField.getText();
 
-
-
         if (searchTerm != null && !searchTerm.isEmpty()) {
             this.model.search(searchTerm);
-
-
-
-            table.refresh();
-
-            ArrayList<FileInfo> searchResults = centralClient.search(searchTerm);
-
-//            ObservableList<FileInfo> data = FXCollections.observableArrayList(searchResults);
-
-
-//            table.setItems(getData());
-
-            // Clear the fileInfoList, then add the new searchResults
-            fileInfoList.removeAll(fileInfoList);
-            fileInfoList.addAll(searchResults);
-
+            this.fileInfoList = this.model.getObsSearchResults();
             table.refresh();
         }
     }
