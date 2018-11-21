@@ -6,14 +6,13 @@ import java.util.ArrayList;
 
 public class Model {
 
-    CentralClient centralClient;
-    String serverName;
-    int centralPort;
-    Info clientInfo;
-    FileInfo clientFileInfo;
+    private CentralClient centralClient;
+    private String serverName;
+    private int centralPort;
+    private Info clientInfo;
 
 
-    ObservableList<FileInfo> obsSearchResults;
+    private ObservableList<FileInfo> obsSearchResults;
 
 
     public Model() {
@@ -28,10 +27,9 @@ public class Model {
 
         centralClient.connect();
         centralClient.list(this.clientInfo);
-        centralClient.connect();
     }
 
-    public void search (String searchTerm) {
+    public void search(String searchTerm) {
         ArrayList<FileInfo> searchResults = this.centralClient.search(searchTerm);
 
         if(!this.obsSearchResults.isEmpty()){
