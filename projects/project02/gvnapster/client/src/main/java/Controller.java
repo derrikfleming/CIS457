@@ -80,8 +80,10 @@ public class Controller implements Initializable
 
         clientInfo = new Info(userNameField.getText(), hostNameField.getText(), Integer.parseInt(hostPortField.getText()), speed.getValue());
 
+
         //connect on the model
         model.connect(clientInfo, serverName, serverPort, rootDirPath);
+
     }
     /*** End of Pane 1 ****************************************************/
     ////////////////////////////////////////////////////////////////////////
