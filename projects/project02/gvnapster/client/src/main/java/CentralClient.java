@@ -9,8 +9,8 @@ import java.util.ArrayList;
 public class CentralClient {
 
     private Socket controlSocket;
-//    private DataOutputStream outToServer;
-//    private DataInputStream inFromServer;
+    private DataOutputStream outToServer;
+    private DataInputStream inFromServer;
 
     String serverAddr;
     int controlPort;
@@ -44,17 +44,15 @@ public class CentralClient {
             System.out.println("You are connected to " + serverAddr + ":" + port);
 
             //out
-            DataOutputStream dataOut = new DataOutputStream(controlSocket.getOutputStream());
-            Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
+            outToServer = new DataOutputStream(controlSocket.getOutputStream());
+            Writer writer = new OutputStreamWriter(outToServer, "UTF-8");
             this.fout = new BufferedWriter(writer);
 
             //in
-            Reader reader = new InputStreamReader(controlSocket.getInputStream());
+//            inFromServer = new DataInputStream(controlSocket.getInputStream());
+            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
+            Reader reader = new InputStreamReader(inFromServer);
             this.fin = new BufferedReader(reader);
-
-            // This should get wrapped in try-with-resources, but...issues.
-//            outToServer = new DataOutputStream(controlSocket.getOutputStream());
-//            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
 
         } catch (IOException e) {
             System.err.print(e);

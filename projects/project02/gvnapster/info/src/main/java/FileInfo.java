@@ -103,12 +103,12 @@ public class FileInfo {
      * @param out Output socket
      * @param fileInfoArrayList ArrayList of FileInfo objects to send
      */
-    public static void sendFileInfoArrayList(BufferedWriter fout, ArrayList<FileInfo> fileInfoArrayList) {
+    public static void sendFileInfoArrayList(Writer fout, ArrayList<FileInfo> fileInfoArrayList) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
             objectMapper.writeValue(fout, fileInfoArrayList);
-            fout.flush();
+//            fout.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,7 +119,7 @@ public class FileInfo {
      * @param in Input socket
      * @return ArrayList of FileInfo objects received
      */
-    public static ArrayList<FileInfo> recvFileInfoArrayList(BufferedReader fin) {
+    public static ArrayList<FileInfo> recvFileInfoArrayList(Reader fin) {
         ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
         try {
             ObjectMapper objectMapper = new ObjectMapper();

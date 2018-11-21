@@ -75,13 +75,16 @@ final class CentralServerRequest implements Runnable {
 //            while (socket.isConnected()) {
             while (!socket.isClosed()) {
                 System.out.println("Begin search loop");
+
                 //getting search term from client
-                fileList = FileInfo.recvFileInfoArrayList(fin);
+                String searchTerm = getSearchTerm();
 
-                System.out.println(fileList);
-
-                //sending search results to centralclient
-//                FileInfo.sendFileInfoArrayList(socket, search(searchTerm));
+                if (searchTerm == null || searchTerm.isEmpty()) {
+                    break;
+                } else {
+                    //sending search results to centralclient
+                    FileInfo.sendFileInfoArrayList(fout, search(searchTerm));
+                }
             }
             System.out.println("After search loop");
 
