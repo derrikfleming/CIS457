@@ -57,23 +57,20 @@ final class CentralServerRequest implements Runnable {
                 fileList = FileInfo.recvFileInfoArrayList(fin);
 
                 System.out.println(fileList);
-                fileList.forEach(fileInfo -> {
-//                    System.out.println(fileInfo.getAddress());
-//                    System.out.println(fileInfo.getPort());
-                    System.out.println(fileInfo.getFilename());
-                });
 
                 userInfo = fileList.get(0).getInfo();
 
                 db.newClient(userInfo, fileList);
 
             }
+
             System.out.println("Socket.isClosed @ pre-searchloop -> " + socket.isClosed());
             System.out.println("Before search loop");
+
             // TODO: double-check this shiiiiiit
             // Loop until client disconnects.
-//            while (socket.isConnected()) {
-            while (!socket.isClosed()) {
+            while (socket.isConnected()) {
+//            while (!socket.isClosed()) {
                 System.out.println("Begin search loop");
 
                 //getting search term from client
@@ -83,19 +80,32 @@ final class CentralServerRequest implements Runnable {
                     break;
                 } else {
                     //sending search results to centralclient
-                    FileInfo.sendFileInfoArrayList(fout, search(searchTerm));
+                    ArrayList<FileInfo> searchResults = search(searchTerm);
+
+                    searchResults.forEach(fileInfo -> {
+                       System.out.println("filename: " + fileInfo.getFilename());
+                    });
+
+                    FileInfo.sendFileInfoArrayList(fout, searchResults);
                 }
             }
             System.out.println("After search loop");
 
             // Disconnect client and remove client info/filelist from database.
             socket.close();
-            // TODO: FIX this shiiiiiit.
+
+            // Testing db.searchFileList()...
+            System.out.println("Before testing db.searchFileList()");
             ArrayList<FileInfo> tempSearch = db.searchFileList("UTF");
             tempSearch.forEach(fileInfo -> {
                 System.out.println("filename: " + fileInfo.getFilename());
             });
-//            db.clientDisconnect(userInfo);
+            System.out.println("After testing db.searchFileList()");
+
+
+            System.out.println("Before db.clientDisconnect()");
+            db.clientDisconnect(userInfo);
+            System.out.println("After db.clientDisconnect()");
 
         } catch (Exception e) {
             System.out.println(e);
