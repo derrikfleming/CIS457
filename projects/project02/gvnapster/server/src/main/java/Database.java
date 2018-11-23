@@ -164,58 +164,37 @@ public class Database {
             //getting relevant file listings
             PreparedStatement ps =
                     conn.prepareStatement( "SELECT * " +
-                                                "FROM tblFileList " +
-                                                "WHERE filename LIKE ?");
+                                                "FROM tblFileList, tblUsers " +
+                                                "WHERE tblUsers.id = tblFileList.userID " +
+                                                "AND tblFileList.filename LIKE ?");
             ps.setString(1, "%" + searchTerm + "%");
 
             // records of relevant files
-            ResultSet rs1 = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int userID = rs.getInt("userID");
+                String filename = rs.getString("filename");
+                Info info = new Info();
 
-            results = getFileListResults(rs1);
+                info.setUsername(rs.getString("username"));
+                info.setAddress(rs.getString("address"));
+                info.setPort(rs.getInt("port"));
+                info.setConType(rs.getString("connType"));
+
+                FileInfo file = new FileInfo(info, filename);
+
+                System.out.println("********* Search Result **********");
+                System.out.println("username -> " + file.getUsername());
+                System.out.println("address  -> " + file.getAddress());
+                System.out.println("port     -> " + file.getPort());
+                System.out.println("connType -> " + file.getConType());
+                System.out.println("filename -> " + file.getFilename());
+
+                results.add(file);
+            }
         } catch (SQLException e) {
             System.out.println(e);
         }
-
         return results;
     }
-
-    /**
-     * Build up the ArrayList of FileInfo's from a given query ResultSet.
-     * @param fileSet query results
-     * @return List of files and who has them
-     * @throws SQLException if an exception occurs
-     */
-    private ArrayList<FileInfo> getFileListResults(ResultSet fileSet) throws SQLException {
-        ArrayList<FileInfo> results = new ArrayList<>();
-
-        //getting userdata regarding files
-        //iterating through the ResultSet of relevant files
-        while (fileSet.next()) {
-            int userID = fileSet.getInt("userID");
-            String filename = fileSet.getString("filename");
-
-
-            // get the sharing user's info from tblUsers using the userID
-            // the current record in tblFileList
-            PreparedStatement ps =
-                    conn.prepareStatement( "SELECT * " +
-                                                "FROM tblUsers " +
-                                                "WHERE id = ?");
-            ps.setInt(1, userID);
-            ResultSet rs = ps.executeQuery();
-            Info info = new Info();
-
-            info.setUsername(rs.getString("username"));
-            info.setAddress(rs.getString("address"));
-            info.setPort(rs.getInt("port"));
-            info.setConType(rs.getString("connType"));
-
-
-            FileInfo file = new FileInfo(info, filename);
-            results.add(file);
-        }
-        return results;
-    }
-
-
 }

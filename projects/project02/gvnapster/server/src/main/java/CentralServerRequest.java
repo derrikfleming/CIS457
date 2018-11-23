@@ -67,12 +67,9 @@ final class CentralServerRequest implements Runnable {
                 if (searchTerm == null || searchTerm.isEmpty()) {
                     break;
                 } else {
+                    System.out.println("SearchTerm  -> " + searchTerm);
                     //sending search results to centralclient
                     ArrayList<FileInfo> searchResults = search(searchTerm);
-
-                    searchResults.forEach(fileInfo -> {
-                        System.out.println("filename: " + fileInfo.getFilename());
-                    });
 
                     objectOutputStream.writeObject(searchResults);
 
@@ -87,16 +84,13 @@ final class CentralServerRequest implements Runnable {
             // Testing db.searchFileList()...
             System.out.println("Before testing db.searchFileList()");
             ArrayList<FileInfo> tempSearch = db.searchFileList("UTF");
-            tempSearch.forEach(fileInfo -> {
-                System.out.println("filename: " + fileInfo.getFilename());
-            });
             System.out.println("After testing db.searchFileList()");
             System.out.println("Before db.clientDisconnect()");
             db.clientDisconnect(userInfo);
             System.out.println("After db.clientDisconnect()");
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
