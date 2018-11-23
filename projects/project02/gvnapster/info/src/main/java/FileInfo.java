@@ -82,18 +82,18 @@ private String filename;
         this.info.setConType(conType);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n------ File Information-----\n");
-        sb.append("Username: " + this.info.getUsername() + "\n");
-        sb.append("Address: " + this.info.getAddress() + "\n");
-        sb.append("Port: " + this.info.getPort() + "\n");
-        sb.append("ConType: " + this.info.getConType() + "\n");
-        sb.append("Filename: " + getFilename() + "\n");
-        sb.append("*****************************");
-        return sb.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("\n------ File Information-----\n");
+//        sb.append("Username: " + this.info.getUsername() + "\n");
+//        sb.append("Address: " + this.info.getAddress() + "\n");
+//        sb.append("Port: " + this.info.getPort() + "\n");
+//        sb.append("ConType: " + this.info.getConType() + "\n");
+//        sb.append("Filename: " + getFilename() + "\n");
+//        sb.append("*****************************");
+//        return sb.toString();
+//    }
 
     /**
      * Send an ArrayList of FileInfo objects to a socket.
