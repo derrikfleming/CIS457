@@ -3,66 +3,58 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Info {
-    private StringProperty username = new SimpleStringProperty();
-    private StringProperty address = new SimpleStringProperty();
-    private IntegerProperty port = new SimpleIntegerProperty();
-    private StringProperty conType = new SimpleStringProperty();
+import java.io.Serializable;
+
+public class Info implements Serializable {
+//    private StringProperty username = new SimpleStringProperty();
+//    private StringProperty address = new SimpleStringProperty();
+//    private IntegerProperty port = new SimpleIntegerProperty();
+//    private StringProperty conType = new SimpleStringProperty();
+    private String username;
+    private String address;
+    private int port;
+    private String conType;
+
 
     public Info() {}
 
     public Info(String username, String address, int port, String conType) {
-        setUsername(username);
-        setAddress(address);
-        setPort(port);
-        setConType(conType);
+        this.username = username;
+        this.address = address;
+        this.port = port;
+        this.conType = conType;
     }
 
-    public StringProperty usernameProperty() {
-        return this.username;
-    }
 
     public String getUsername() {
-        return usernameProperty().get();
+        return username;
     }
 
     public void setUsername(String username) {
-        this.usernameProperty().set(username);
-    }
-
-    public StringProperty addressProperty() {
-        return this.address;
+        this.username = username;
     }
 
     public String getAddress() {
-        return addressProperty().get();
+        return address;
     }
 
     public void setAddress(String address) {
-        this.addressProperty().set(address);
-    }
-
-    public IntegerProperty portProperty() {
-        return this.port;
+        this.address = address;
     }
 
     public int getPort() {
-        return portProperty().get();
+        return port;
     }
 
     public void setPort(int port) {
-        this.portProperty().set(port);
-    }
-
-    public StringProperty conTypeProperty() {
-        return this.conType;
+        this.port = port;
     }
 
     public String getConType() {
-        return conTypeProperty().get();
+        return conType;
     }
 
     public void setConType(String conType) {
-        this.conTypeProperty().set(conType);
+        this.conType = conType;
     }
 }

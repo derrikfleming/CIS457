@@ -8,6 +8,8 @@ import javafx.scene.control.ComboBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,17 +42,14 @@ public class Controller implements Initializable
         speed.getItems().setAll("T3","T1","Cable","DSL","FM","AM","Millenium Falcon");
 
         // Bind FileInfo fields to the table cols.
-        speedColumn.setCellValueFactory(param -> param.getValue().conTypeProperty());
+        speedColumn.setCellValueFactory(new PropertyValueFactory<FileInfo, String>("conType"));
         table.getColumns().add(speedColumn);
 
-        hostNameColumn.setCellValueFactory(param -> param.getValue().addressProperty());
+        hostNameColumn.setCellValueFactory(new PropertyValueFactory<FileInfo, String>("address"));
         table.getColumns().add(hostNameColumn);
 
-        fileNameColumn.setCellValueFactory(param -> param.getValue().filenameProperty());
+        fileNameColumn.setCellValueFactory(new PropertyValueFactory<FileInfo, String>("filename"));
         table.getColumns().add(fileNameColumn);
-
-        fileInfoList.addListener((ListChangeListener<FileInfo>) c -> c.getList());
-
     }
 
 

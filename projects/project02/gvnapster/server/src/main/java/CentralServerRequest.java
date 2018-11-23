@@ -5,33 +5,22 @@ import java.util.ArrayList;
 
 final class CentralServerRequest implements Runnable {
     private Socket socket;
-//    private BufferedReader in;
-//    private DataOutputStream out;
     private Database db = new Database();
 
-    //userData ArrayList format <username> -> <addr> -> <port> -> <conntype>
-    //filelist ArrayList format <filename> -> <filename> -> ...
     private Info userInfo;
     private ArrayList<FileInfo> fileList;
-    //reader/writer
-    private BufferedReader fin;
-    private BufferedWriter fout;
-
+    //streams
+    ObjectInputStream objectInputStream;
+    ObjectOutputStream objectOutputStream;
 
     public CentralServerRequest(Socket socket) throws Exception {
         try {
             this.socket = socket;
-//            out = new DataOutputStream(this.socket.getOutputStream());
-//            in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 
             //out
-            DataOutputStream dataOut = new DataOutputStream(socket.getOutputStream());
-            Writer writer = new OutputStreamWriter(dataOut, "UTF-8");
-            this.fout = new BufferedWriter(writer);
-
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             //in
-            Reader reader = new InputStreamReader(socket.getInputStream());
-            this.fin = new BufferedReader(reader);
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
 
             // Test CentralServer thread
             System.out.println("CentralServer thread started!");
@@ -46,22 +35,20 @@ final class CentralServerRequest implements Runnable {
      */
     public void run() {
         try {
-            System.out.println("A server thread has started.");
             System.out.println("Getting ready to process req's");
 
             // Initialize client connection
             if(socket.isConnected()){
                 System.out.println("Client connected.");
-
                 // Receive client's file list.
-                fileList = FileInfo.recvFileInfoArrayList(fin);
+//                fileList = FileInfo.recvFileInfoArrayList(fin);
 
-                System.out.println(fileList);
+                Object object = objectInputStream.readObject();
+                fileList = (ArrayList<FileInfo>)object;
 
+                System.out.println(fileList.toString());
                 userInfo = fileList.get(0).getInfo();
-
                 db.newClient(userInfo, fileList);
-
             }
 
             System.out.println("Socket.isClosed @ pre-searchloop -> " + socket.isClosed());
@@ -74,7 +61,8 @@ final class CentralServerRequest implements Runnable {
                 System.out.println("Begin search loop");
 
                 //getting search term from client
-                String searchTerm = getSearchTerm();
+                Object object = objectInputStream.readObject();
+                String searchTerm = (String) object;
 
                 if (searchTerm == null || searchTerm.isEmpty()) {
                     break;
@@ -83,10 +71,12 @@ final class CentralServerRequest implements Runnable {
                     ArrayList<FileInfo> searchResults = search(searchTerm);
 
                     searchResults.forEach(fileInfo -> {
-                       System.out.println("filename: " + fileInfo.getFilename());
+                        System.out.println("filename: " + fileInfo.getFilename());
                     });
 
-                    FileInfo.sendFileInfoArrayList(fout, searchResults);
+                    objectOutputStream.writeObject(searchResults);
+
+//                    FileInfo.sendFileInfoArrayList(fout, searchResults);
                 }
             }
             System.out.println("After search loop");
@@ -101,8 +91,6 @@ final class CentralServerRequest implements Runnable {
                 System.out.println("filename: " + fileInfo.getFilename());
             });
             System.out.println("After testing db.searchFileList()");
-
-
             System.out.println("Before db.clientDisconnect()");
             db.clientDisconnect(userInfo);
             System.out.println("After db.clientDisconnect()");
@@ -112,21 +100,21 @@ final class CentralServerRequest implements Runnable {
         }
     }
 
-    /**
-     * Receives the search term from the client
-     * @return the search term
-     */
-    private String getSearchTerm(){
-        String searchTerm = "";
-        try {
-            searchTerm = fin.readLine();
-            System.out.println("getSearchTerm() ->" + searchTerm);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return searchTerm;
-    }
+//    /**
+//     * Receives the search term from the client
+//     * @return the search term
+//     */
+//    private String getSearchTerm(){
+//        String searchTerm = "";
+//        try {
+//            searchTerm = fin.readLine();
+//            System.out.println("getSearchTerm() ->" + searchTerm);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return searchTerm;
+//    }
 
     /**
      * Search the database for filenames matching searchTerm.

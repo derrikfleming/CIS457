@@ -16,9 +16,11 @@ public class CentralClient {
     int controlPort;
     Path rootDirPath;
 
-    //reader/writer
-    BufferedReader fin;
-    BufferedWriter fout;
+    //streams
+    ObjectInputStream objectInputStream;
+    ObjectOutputStream objectOutputStream;
+    OutputStream outputStream;
+    InputStream inputStream;
 
     final static String CRLF = "\r\n";
 
@@ -44,15 +46,10 @@ public class CentralClient {
             System.out.println("You are connected to " + serverAddr + ":" + port);
 
             //out
-            outToServer = new DataOutputStream(controlSocket.getOutputStream());
-            Writer writer = new OutputStreamWriter(outToServer, "UTF-8");
-            this.fout = new BufferedWriter(writer);
-
+            this.objectOutputStream = new ObjectOutputStream(controlSocket.getOutputStream());
             //in
-//            inFromServer = new DataInputStream(controlSocket.getInputStream());
-            inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
-            Reader reader = new InputStreamReader(inFromServer);
-            this.fin = new BufferedReader(reader);
+            this.objectInputStream = new ObjectInputStream(controlSocket.getInputStream());
+
 
         } catch (IOException e) {
             System.err.print(e);
@@ -65,14 +62,19 @@ public class CentralClient {
      * @return results ArrayList<FileInfo> to display in Client UI
      */
     public ArrayList<FileInfo> search(String searchTerm){
+        ArrayList<FileInfo> searchResults = new ArrayList<FileInfo>();
+
         try{
-//            DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
-            outToServer.writeBytes(searchTerm + CRLF);
+            objectOutputStream.writeObject(searchTerm);
+            Object object = objectInputStream.readObject();
+            searchResults = (ArrayList<FileInfo>)object;
         } catch (IOException e) {
             System.err.println(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
-        return FileInfo.recvFileInfoArrayList(fin);
+        return searchResults;
     }
 
     /**
@@ -93,7 +95,7 @@ public class CentralClient {
 
             // Write files list to output socket.
             try {
-                FileInfo.sendFileInfoArrayList(this.fout, files);
+                this.objectOutputStream.writeObject(files);
             } catch (Exception e) {
                 System.out.println(e);
             }

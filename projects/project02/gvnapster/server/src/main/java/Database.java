@@ -145,9 +145,7 @@ public class Database {
 
     private void deleteUser (int userID) throws SQLException {
         PreparedStatement ps =
-                conn.prepareStatement( "DELETE " +
-                                            "FROM tblUsers " +
-                                            "WHERE id = ?;");
+                conn.prepareStatement( "DELETE FROM tblUsers WHERE id = ?");
         ps.setInt(1, userID);
         ps.executeUpdate();
     }
@@ -165,13 +163,11 @@ public class Database {
             PreparedStatement ps =
                     conn.prepareStatement( "SELECT * " +
                                                 "FROM tblFileList " +
-                                                "WHERE fileName LIKE ?;");
-            ps.setString(1, "%" + searchTerm + '%');
+                                                "WHERE filename LIKE ?");
+            ps.setString(1, "'%" + searchTerm + "%'");
 
             // records of relevant files
             ResultSet rs1 = ps.executeQuery();
-
-
             results = getFileListResults(rs1);
         } catch (SQLException e) {
             System.out.println(e);

@@ -31,13 +31,9 @@ public class Model {
 
     public void search(String searchTerm) {
         ArrayList<FileInfo> searchResults = this.centralClient.search(searchTerm);
-
-        if(!this.obsSearchResults.isEmpty()){
-            this.obsSearchResults = FXCollections.observableArrayList(searchResults);
-        } else {
-            obsSearchResults.removeAll();
-            obsSearchResults.addAll(searchResults);
-        }
+        this.obsSearchResults.removeAll();
+        this.obsSearchResults = FXCollections.observableArrayList(searchResults);
+        this.obsSearchResults.addAll(searchResults);
     }
 
     public ObservableList<FileInfo> getObsSearchResults() {
