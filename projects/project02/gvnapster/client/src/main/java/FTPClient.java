@@ -48,8 +48,8 @@ public class FTPClient implements Runnable {
     }
 
     private void connect() {
-        try (Socket s = new Socket(fileInfo.getAddress(), fileInfo.getPort())) {
-            controlSocket = s;
+        try {
+            controlSocket = new Socket(fileInfo.getAddress(), fileInfo.getPort());
             System.out.println("You are connected to " + fileInfo.getAddress() + ":" + controlPort);
 
             // This should get wrapped in try-with-resources, but...issues.
@@ -68,8 +68,8 @@ public class FTPClient implements Runnable {
 
         try (ServerSocket server = new ServerSocket(dataPort)) {
             // Build the retr command to send to server.
-            String command = fileInfo.getPort() + " RETR " + fileInfo.getFilename() + " " + CRLF;
-            // System.out.println("writing command to server:" + command);
+            String command = dataPort + " RETR " + fileInfo.getFilename() + " " + CRLF;
+             System.out.println("writing command to server:" + command);
             outToServer.writeBytes(command);
 
             try (Socket dataSocket = server.accept()) {
@@ -83,6 +83,8 @@ public class FTPClient implements Runnable {
             }
             server.close();
             System.out.println("serversocket is closed");
+            controlSocket.close();
+            System.out.println("controlsocket is closed");
         } catch (Exception e) {
             System.out.println(e);
         }
