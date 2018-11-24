@@ -13,11 +13,7 @@ public class CentralServer {
         // for verifying build working
         System.out.println("HEY! The CentralServer is running");
 
-//        //testing
-//        CentralServerRequest request = new CentralServerRequest();
         Class.forName("org.sqlite.JDBC");
-
-        // path relative to module dir
         Connection dbConnection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/napster.db");
 
         // control port

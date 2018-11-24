@@ -82,72 +82,16 @@ private String filename;
         this.info.setConType(conType);
     }
 
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("\n------ File Information-----\n");
-//        sb.append("Username: " + this.info.getUsername() + "\n");
-//        sb.append("Address: " + this.info.getAddress() + "\n");
-//        sb.append("Port: " + this.info.getPort() + "\n");
-//        sb.append("ConType: " + this.info.getConType() + "\n");
-//        sb.append("Filename: " + getFilename() + "\n");
-//        sb.append("*****************************");
-//        return sb.toString();
-//    }
-
-    /**
-     * Send an ArrayList of FileInfo objects to a socket.
-     * @param fout Output socket
-     * @param fileInfoArrayList ArrayList of FileInfo objects to send
-     */
-    public static void sendFileInfoArrayList(Writer fout, ArrayList<FileInfo> fileInfoArrayList) {
-//        try {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
-//            objectMapper.writeValue(fout, fileInfoArrayList);
-//            fout.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        Gson gson = FxGson.create();
-////        Gson gson = new Gson();
-//        Type fileInfoType = new TypeToken<ArrayList<FileInfo>>() {}.getType();
-//        String json = gson.toJson(fileInfoArrayList, fileInfoType);
-//        System.out.println(json);
-//        try {
-//            fout.write(json);
-//            fout.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
-
-    /**
-     * Receive an ArrayList of FileInfo objects from a socket.
-     * @param fin Input socket
-     * @return ArrayList of FileInfo objects received
-     */
-    public static ArrayList<FileInfo> recvFileInfoArrayList(Reader fin) {
-        ArrayList<FileInfo> fileInfoArrayList = new ArrayList<>();
-//        try {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
-//            CollectionType javaType = objectMapper.getTypeFactory()
-//                    .constructCollectionType(ArrayList.class, FileInfo.class);
-//            fileInfoArrayList = objectMapper.readValue(fin, javaType);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Gson gson = FxGson.create();
-////        Gson gson = new Gson();
-//        Type fileInfoType = new TypeToken<ArrayList<FileInfo>>() {}.getType();
-//        fileInfoArrayList = gson.fromJson(fin, fileInfoType);
-//        System.out.println("HERE");
-
-
-        return fileInfoArrayList;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n------ File Information-----\n");
+        sb.append("Username: " + this.info.getUsername() + "\n");
+        sb.append("Address: " + this.info.getAddress() + "\n");
+        sb.append("Port: " + this.info.getPort() + "\n");
+        sb.append("ConType: " + this.info.getConType() + "\n");
+        sb.append("Filename: " + getFilename() + "\n");
+        sb.append("*****************************\n");
+        return sb.toString();
     }
 }

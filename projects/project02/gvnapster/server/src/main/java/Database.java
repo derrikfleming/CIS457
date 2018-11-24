@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Database {
 
     private Connection conn;
-    //private boolean empty = true;
 
     public Database(Connection conn) {
         this.conn = conn;
@@ -34,14 +33,7 @@ public class Database {
         if(!userExists(username)){
             writeUserData(clientInfo);
             userID = getUserID(username);
-            // TODO: FIXME
             writeFileList(userID, clientFileInfos);
-//            try {
-//                userID = getUserID(username);
-//                writeFileList(userID, clientFileInfos);
-//            } catch (NumberFormatException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
@@ -79,31 +71,26 @@ public class Database {
             PreparedStatement ps =
                     conn.prepareStatement("INSERT INTO tblUsers (username, address, port, connType)" +
                                                 "VALUES(?,?,?,?);");
-//            ps.setInt(0, null);
             ps.setString(1, clientInfo.getUsername());
             ps.setString(2, clientInfo.getAddress());
             ps.setInt(3, clientInfo.getPort());
             ps.setString(4, clientInfo.getConType());
             ps.execute();
         } catch (SQLException e) {
-//            System.out.println(e);
             e.printStackTrace();
         }
     }
 
     private void writeFileList(int userID, ArrayList<FileInfo> clientFileInfos) {
         for (int i = 0; i < clientFileInfos.size(); i++) {
-            System.out.println(clientFileInfos.get(i).getFilename());
             try {
                 PreparedStatement ps =
                         conn.prepareStatement("INSERT INTO tblFileList (userID, filename)" +
                                                     "VALUES(?,?);");
                 ps.setInt(1, userID);
                 ps.setString(2, clientFileInfos.get(i).getFilename());
-                // TODO: FIXME
                 ps.execute();
             } catch (SQLException e) {
-//                System.out.println(e);
                 e.printStackTrace();
             }
         }
@@ -154,17 +141,20 @@ public class Database {
      * @param searchTerm string search for in filenames
      * @return List of files and who has them
      */
-    public ArrayList<FileInfo> searchFileList(String searchTerm) {
+    public ArrayList<FileInfo> searchFileList(String searchTerm, String username) {
         ArrayList<FileInfo> results = new ArrayList<>();
 
         try {
             //getting relevant file listings
+            int searchingUsersID = getUserID(username);
             PreparedStatement ps =
                     conn.prepareStatement( "SELECT * " +
                                                 "FROM tblFileList, tblUsers " +
                                                 "WHERE tblUsers.id = tblFileList.userID " +
+                                                "AND tblUsers.id != ?" +
                                                 "AND tblFileList.filename LIKE ?");
-            ps.setString(1, "%" + searchTerm + "%");
+            ps.setInt(1, searchingUsersID);
+            ps.setString(2, "%" + searchTerm + "%");
 
             // records of relevant files
             ResultSet rs = ps.executeQuery();
