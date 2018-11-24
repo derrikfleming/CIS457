@@ -11,6 +11,7 @@ public class App extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("app.fxml"));
         primaryStage.setTitle("Napster      0__0");
         primaryStage.setScene(new Scene(root, 650, 400));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
