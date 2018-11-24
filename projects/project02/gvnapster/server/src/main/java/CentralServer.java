@@ -1,5 +1,7 @@
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class CentralServer {
     /**
@@ -13,7 +15,10 @@ public class CentralServer {
 
 //        //testing
 //        CentralServerRequest request = new CentralServerRequest();
+        Class.forName("org.sqlite.JDBC");
 
+        // path relative to module dir
+        Connection dbConnection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/napster.db");
 
         // control port
         int port = 9381;
@@ -24,7 +29,7 @@ public class CentralServer {
             // Listen for a TCP connection request.
             Socket connection = socket.accept();
             // Construct an object to process the HTTP request message.
-            CentralServerRequest request = new CentralServerRequest(connection);
+            CentralServerRequest request = new CentralServerRequest(connection, dbConnection);
             // Create a new thread to process the request.
             Thread thread = new Thread(request);
             // Start the thread.

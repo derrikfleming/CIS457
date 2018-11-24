@@ -6,22 +6,19 @@ public class Database {
     private Connection conn;
     //private boolean empty = true;
 
-    public Database() {
+    public Database(Connection conn) {
+        this.conn = conn;
         connect();
     }
 
     private void connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-
-            // path relative to module dir
-            conn = DriverManager.getConnection("jdbc:sqlite:src/main/resources/napster.db");
             PreparedStatement ps =
                     conn.prepareStatement("PRAGMA foreign_keys = ON;");
             ps.execute();
             //testing
             System.out.println("Connected to Napster DB!");
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
     }

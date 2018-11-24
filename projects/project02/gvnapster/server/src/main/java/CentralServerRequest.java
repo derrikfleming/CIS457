@@ -1,11 +1,12 @@
 import java.io.*;
 import java.net.Socket;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 final class CentralServerRequest implements Runnable {
     private Socket socket;
-    private Database db = new Database();
+    private Database db;
 
     private Info userInfo;
     private ArrayList<FileInfo> fileList;
@@ -13,7 +14,9 @@ final class CentralServerRequest implements Runnable {
     ObjectInputStream objectInputStream;
     ObjectOutputStream objectOutputStream;
 
-    public CentralServerRequest(Socket socket) throws Exception {
+    public CentralServerRequest(Socket socket, Connection conn) throws Exception {
+        this.db = new Database(conn);
+
         try {
             this.socket = socket;
 
