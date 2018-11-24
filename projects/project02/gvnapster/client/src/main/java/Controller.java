@@ -41,7 +41,7 @@ public class Controller implements Initializable
 
         speed.getItems().setAll("T3","T1","Cable","DSL","FM","AM","Millenium Falcon");
 
-
+        setCellValueFactories();
     }
 
     public void setCellValueFactories() {
@@ -57,9 +57,9 @@ public class Controller implements Initializable
     }
 
     public void refreshSearchResultsTable() {
+        this.fileInfoList.removeAll();
         this.fileInfoList = this.model.getObsSearchResults();
         this.table.setItems(this.fileInfoList);
-        setCellValueFactories();
         table.refresh();
     }
 
