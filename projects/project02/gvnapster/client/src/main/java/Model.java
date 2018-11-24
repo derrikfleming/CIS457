@@ -34,8 +34,9 @@ public class Model {
         centralClient.list(this.clientInfo);
 
         // Init FTPServer
-        this.ftpServer = new FTPServer(this.clientInfo.getPort(), this.rootDirPath);
-        // TODO: Probably going to need to make FTPServer a singleton...
+        if (ftpServer == null) {
+            this.ftpServer = new FTPServer(this.clientInfo.getPort(), this.rootDirPath);
+        }
     }
 
     public void search(String searchTerm) {
