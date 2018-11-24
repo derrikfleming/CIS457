@@ -39,7 +39,7 @@ public class FTPServer implements Runnable {
      * Implement the run() method of the Runnable interface.
      */
     public void run() {
-        System.out.println("Main server thread has started.");
+        System.out.println("Client FTPServer thread has started.");
         System.out.println("Getting ready to process req's");
 
         try (
