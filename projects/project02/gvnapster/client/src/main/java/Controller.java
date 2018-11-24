@@ -41,6 +41,10 @@ public class Controller implements Initializable
 
         speed.getItems().setAll("T3","T1","Cable","DSL","FM","AM","Millenium Falcon");
 
+
+    }
+
+    public void setCellValueFactories() {
         // Bind FileInfo fields to the table cols.
         speedColumn.setCellValueFactory(new PropertyValueFactory<FileInfo, String>("conType"));
         table.getColumns().add(speedColumn);
@@ -52,6 +56,12 @@ public class Controller implements Initializable
         table.getColumns().add(fileNameColumn);
     }
 
+    public void refreshSearchResultsTable() {
+        this.fileInfoList = this.model.getObsSearchResults();
+        this.table.setItems(this.fileInfoList);
+        setCellValueFactories();
+        table.refresh();
+    }
 
     /*** ... initialized **************************************************/
     ////////////////////////////////////////////////////////////////////////
@@ -100,8 +110,7 @@ public class Controller implements Initializable
 
         if (searchTerm != null && !searchTerm.isEmpty()) {
             this.model.search(searchTerm);
-            this.fileInfoList = this.model.getObsSearchResults();
-            table.refresh();
+            refreshSearchResultsTable();
         }
     }
 

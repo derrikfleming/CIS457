@@ -94,22 +94,6 @@ final class CentralServerRequest implements Runnable {
         }
     }
 
-//    /**
-//     * Receives the search term from the client
-//     * @return the search term
-//     */
-//    private String getSearchTerm(){
-//        String searchTerm = "";
-//        try {
-//            searchTerm = fin.readLine();
-//            System.out.println("getSearchTerm() ->" + searchTerm);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return searchTerm;
-//    }
-
     /**
      * Search the database for filenames matching searchTerm.
      * @param searchTerm string search for in filenames
