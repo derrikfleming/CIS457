@@ -68,6 +68,7 @@ public class CentralClient {
             objectOutputStream.writeObject(searchTerm);
             Object object = objectInputStream.readObject();
             searchResults = (ArrayList<FileInfo>)object;
+            System.out.println("SearchResults -> " + searchResults.toString());
         } catch (IOException e) {
             System.err.println(e);
         } catch (ClassNotFoundException e) {
