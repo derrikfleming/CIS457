@@ -111,6 +111,7 @@ public class Controller implements Initializable
 
         System.out.println(selected.getFilename());
         // TODO: spawn FTPClient
+        this.model.download(selected);
     }
 
 }
