@@ -118,14 +118,13 @@ final class FTPRequest implements Runnable {
         String clientCommand = "";
         String commandTarget = "";
         String frstln;
-        byte[] data;
         int port;
 
         while (this.controlSocket.isConnected()) {
             System.out.println("Waiting for requests...");
             clientsCommand = inFromClient.readLine();
 
-            if (clientCommand == null) {
+            if (clientsCommand == null) {
                 break;
             } else {
                 System.out.println("Command from client: " + clientsCommand);
@@ -153,6 +152,5 @@ final class FTPRequest implements Runnable {
             }
         }
         this.controlSocket.close();
-        return;
     }
 }
