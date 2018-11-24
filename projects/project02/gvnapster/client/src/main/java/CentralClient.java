@@ -78,6 +78,18 @@ public class CentralClient {
         return searchResults;
     }
 
+    public void newListing(FileInfo newListing){
+        ArrayList<FileInfo> newFile = new ArrayList<FileInfo>();
+        newFile.add(newListing);
+        try {
+            objectOutputStream.writeObject("/*/ Downloaded /*/");
+            objectOutputStream.writeObject(newFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * List all files on the server
      * @param hostInfo Host Info for creating FileInfo

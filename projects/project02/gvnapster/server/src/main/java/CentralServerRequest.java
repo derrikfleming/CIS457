@@ -68,9 +68,20 @@ final class CentralServerRequest implements Runnable {
                     break;
                 }
 
+                // client disconnected
                 if (searchTerm == null || searchTerm.isEmpty()) {
                     break;
-                } else {
+                }
+                // new download by user
+                else if (searchTerm.contains("/*/ Downloaded /*/")) {
+                    Object obj = objectInputStream.readObject();
+                    ArrayList<FileInfo> newFile = (ArrayList<FileInfo>) obj;
+
+                    int userID = db.getUserID(newFile.get(0).getUsername());
+                    db.writeFileList(userID, newFile);
+                }
+                // client made a search
+                else {
                     System.out.print("Received SearchTerm  -> " + searchTerm);
                     System.out.println(", from client user -> " + userInfo.getUsername());
 

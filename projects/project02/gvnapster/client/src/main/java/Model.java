@@ -52,7 +52,7 @@ public class Model {
         return this.obsSearchResults;
     }
 
-    public void download(FileInfo fileInfo) {
+    public void download(FileInfo fileInfo, FileInfo newSharedInfo) {
         System.out.print("Spawning FTPClient to download '" + fileInfo.getFilename());
         System.out.print("' from " + fileInfo.getAddress() + ":" + fileInfo.getPort() + "\n");
         // Construct an FTPClient to handle the download.
@@ -61,5 +61,7 @@ public class Model {
         Thread thread = new Thread(ftpClient);
         // Start the thread.
         thread.start();
+
+        this.centralClient.newListing(newSharedInfo);
     }
 }

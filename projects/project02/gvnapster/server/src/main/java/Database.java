@@ -81,7 +81,7 @@ public class Database {
         }
     }
 
-    private void writeFileList(int userID, ArrayList<FileInfo> clientFileInfos) {
+    public void writeFileList(int userID, ArrayList<FileInfo> clientFileInfos) {
         for (int i = 0; i < clientFileInfos.size(); i++) {
             try {
                 PreparedStatement ps =
@@ -96,7 +96,7 @@ public class Database {
         }
     }
 
-    private int getUserID(String username){
+    public int getUserID(String username){
 //        int userID = Integer.parseInt(null);
         int userID = 0;
 
